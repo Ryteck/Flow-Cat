@@ -1,0 +1,14 @@
+{
+	"name": "flow-cat",
+	"version": "0.1.0",
+	"private": true,
+	"module": "index.ts",
+	"type": "module",
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}
