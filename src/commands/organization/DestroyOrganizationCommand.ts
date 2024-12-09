@@ -1,7 +1,7 @@
 import { organizationPropsSchema } from "@/entities/Organization";
 import type { z } from "zod";
-import Command from "../domain/Command";
-import type OrganizationRepository from "../repositories/OrganizationRepository";
+import Command from "../../domain/Command";
+import type OrganizationRepository from "../../repositories/OrganizationRepository";
 
 // DTO
 

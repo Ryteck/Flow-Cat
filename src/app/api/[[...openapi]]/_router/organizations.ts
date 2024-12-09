@@ -1,10 +1,10 @@
 import { createOpenApiServerActionRouter } from "zsa-openapi";
 
-import destroyOrganizationAction from "@/actions/destroyOrganizationAction";
-import listOrganizationsAction from "@/actions/listOrganizationsAction";
-import showOrganizationAction from "@/actions/showOrganizationAction";
-import storeOrganizationAction from "@/actions/storeOrganizationAction";
-import updateOrganizationAction from "@/actions/updateOrganizationAction";
+import destroyOrganizationAction from "@/actions/organization/destroyOrganizationAction";
+import listOrganizationsAction from "@/actions/organization/listOrganizationsAction";
+import showOrganizationAction from "@/actions/organization/showOrganizationAction";
+import storeOrganizationAction from "@/actions/organization/storeOrganizationAction";
+import updateOrganizationAction from "@/actions/organization/updateOrganizationAction";
 
 const apiRouteSpecs = { tags: ["organizations"] };
 

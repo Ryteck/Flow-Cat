@@ -1,7 +1,7 @@
 "use server";
 
 import { getDefaultShowUserCommand } from "@/commands";
-import { showUserDTOSchema } from "@/commands/ShowUserCommand";
+import { showUserDTOSchema } from "@/commands/user/ShowUserCommand";
 import { renderedUserPropsSchema } from "@/entities/User";
 import { createServerAction } from "zsa";
 

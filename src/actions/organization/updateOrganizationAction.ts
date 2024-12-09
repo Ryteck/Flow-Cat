@@ -1,7 +1,7 @@
 "use server";
 
 import { getDefaultUpdateOrganizationCommand } from "@/commands";
-import { updateOrganizationDTOSchema } from "@/commands/UpdateOrganizationCommand";
+import { updateOrganizationDTOSchema } from "@/commands/organization/UpdateOrganizationCommand";
 import { organizationPropsSchema } from "@/entities/Organization";
 import { createServerAction } from "zsa";
 

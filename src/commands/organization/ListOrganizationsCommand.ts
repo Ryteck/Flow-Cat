@@ -1,5 +1,5 @@
-import Command from "../domain/Command";
-import type OrganizationRepository from "../repositories/OrganizationRepository";
+import Command from "../../domain/Command";
+import type OrganizationRepository from "../../repositories/OrganizationRepository";
 
 // Command
 

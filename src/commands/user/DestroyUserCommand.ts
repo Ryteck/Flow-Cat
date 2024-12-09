@@ -1,7 +1,7 @@
 import { userPropsSchema } from "@/entities/User";
 import type { z } from "zod";
-import Command from "../domain/Command";
-import type UserRepository from "../repositories/UserRepository";
+import Command from "../../domain/Command";
+import type UserRepository from "../../repositories/UserRepository";
 
 // DTO
 

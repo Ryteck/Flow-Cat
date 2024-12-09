@@ -1,7 +1,7 @@
 "use server";
 
 import { getDefaultDestroyUserCommand } from "@/commands";
-import { destroyUserDTOSchema } from "@/commands/DestroyUserCommand";
+import { destroyUserDTOSchema } from "@/commands/user/DestroyUserCommand";
 import { renderedUserPropsSchema } from "@/entities/User";
 import { createServerAction } from "zsa";
 

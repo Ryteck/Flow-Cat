@@ -7,19 +7,19 @@ import {
 
 // import Organization Commands
 
-import DestroyOrganizationCommand from "./DestroyOrganizationCommand";
-import ListOrganizationsCommand from "./ListOrganizationsCommand";
-import ShowOrganizationCommand from "./ShowOrganizationCommand";
-import StoreOrganizationCommand from "./StoreOrganizationCommand";
-import UpdateOrganizationCommand from "./UpdateOrganizationCommand";
+import DestroyOrganizationCommand from "./organization/DestroyOrganizationCommand";
+import ListOrganizationsCommand from "./organization/ListOrganizationsCommand";
+import ShowOrganizationCommand from "./organization/ShowOrganizationCommand";
+import StoreOrganizationCommand from "./organization/StoreOrganizationCommand";
+import UpdateOrganizationCommand from "./organization/UpdateOrganizationCommand";
 
 // import User Commands
 
-import DestroyUserCommand from "./DestroyUserCommand";
-import ListUsersCommand from "./ListUsersCommand";
-import ShowUserCommand from "./ShowUserCommand";
-import StoreUserCommand from "./StoreUserCommand";
-import UpdateUserCommand from "./UpdateUserCommand";
+import DestroyUserCommand from "./user/DestroyUserCommand";
+import ListUsersCommand from "./user/ListUsersCommand";
+import ShowUserCommand from "./user/ShowUserCommand";
+import StoreUserCommand from "./user/StoreUserCommand";
+import UpdateUserCommand from "./user/UpdateUserCommand";
 
 // Repositories
 

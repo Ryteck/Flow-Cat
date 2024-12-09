@@ -1,7 +1,7 @@
 "use server";
 
 import { getDefaultStoreUserCommand } from "@/commands";
-import { storeUserDTOSchema } from "@/commands/StoreUserCommand";
+import { storeUserDTOSchema } from "@/commands/user/StoreUserCommand";
 import { renderedUserPropsSchema } from "@/entities/User";
 import { createServerAction } from "zsa";
 

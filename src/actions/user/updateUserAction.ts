@@ -1,7 +1,7 @@
 "use server";
 
 import { getDefaultUpdateUserCommand } from "@/commands";
-import { updateUserDTOSchema } from "@/commands/UpdateUserCommand";
+import { updateUserDTOSchema } from "@/commands/user/UpdateUserCommand";
 import { renderedUserPropsSchema } from "@/entities/User";
 import { createServerAction } from "zsa";
 

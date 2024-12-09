@@ -1,13 +1,12 @@
 import { userPropsSchema } from "@/entities/User";
 import type { z } from "zod";
-import Command from "../domain/Command";
-import type UserRepository from "../repositories/UserRepository";
+import Command from "../../domain/Command";
+import type UserRepository from "../../repositories/UserRepository";
 
 // DTO
 
-export const updateUserDTOSchema = userPropsSchema.pick({
-	id: true,
-	nickname: true,
+export const updateUserDTOSchema = userPropsSchema.omit({
+	password: true,
 });
 
 export type UpdateUserDTO = z.infer<typeof updateUserDTOSchema>;

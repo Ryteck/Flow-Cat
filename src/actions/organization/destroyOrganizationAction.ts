@@ -1,7 +1,7 @@
 "use server";
 
 import { getDefaultDestroyOrganizationCommand } from "@/commands";
-import { destroyOrganizationDTOSchema } from "@/commands/DestroyOrganizationCommand";
+import { destroyOrganizationDTOSchema } from "@/commands/organization/DestroyOrganizationCommand";
 import { organizationPropsSchema } from "@/entities/Organization";
 import { createServerAction } from "zsa";
 
