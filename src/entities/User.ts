@@ -1,17 +1,18 @@
+import Entity from "@/domain/Entity";
+import uuidSchema from "@/schemas/uuid";
 import { z } from "zod";
-import Entity from "../domain/Entity";
 
-// User Props
+// Props
 
 export const userPropsSchema = z.object({
-	id: z.string().uuid(),
+	id: uuidSchema,
 	nickname: z.string(),
 	password: z.string(),
 });
 
 export type UserProps = z.infer<typeof userPropsSchema>;
 
-// Rendered User Props
+// Rendered Props
 
 export const renderedUserPropsSchema = userPropsSchema.omit({ password: true });
 export type RenderedUserProps = z.infer<typeof renderedUserPropsSchema>;

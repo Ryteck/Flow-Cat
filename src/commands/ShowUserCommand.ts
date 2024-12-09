@@ -10,7 +10,7 @@ export type ShowUserDTO = z.infer<typeof showUserDTOSchema>;
 
 // Command
 
-export default class FindUserCommand extends Command {
+export default class ShowUserCommand extends Command {
 	constructor(private userRepository: UserRepository) {
 		super();
 	}

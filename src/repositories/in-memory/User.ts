@@ -14,14 +14,14 @@ export default class InMemoryUserRepository implements UserRepository {
 	}
 
 	show(id: string) {
-		const user = this.users.find((user) => user.id === id);
-		return Promise.resolve(user ?? null);
+		const findedUser = this.users.find((user) => user.id === id);
+		return Promise.resolve(findedUser ?? null);
 	}
 
 	store({ nickname, password }: StoreUserData) {
 		const findedUser = this.users.find((user) => user.nickname === nickname);
 
-		if (findedUser !== null)
+		if (findedUser !== undefined)
 			throw new Error("User with this nickname already exists.");
 
 		const id = Bun.randomUUIDv7();
