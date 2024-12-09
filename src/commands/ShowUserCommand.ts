@@ -1,14 +1,21 @@
+import { userPropsSchema } from "@/entities/User";
+import type { z } from "zod";
 import Command from "../domain/Command";
 import type UserRepository from "../repositories/UserRepository";
 
-export type FindUserDTO = { id: string };
+// DTO
+
+export const showUserDTOSchema = userPropsSchema.pick({ id: true });
+export type ShowUserDTO = z.infer<typeof showUserDTOSchema>;
+
+// Command
 
 export default class FindUserCommand extends Command {
 	constructor(private userRepository: UserRepository) {
 		super();
 	}
 
-	async execute(dto: FindUserDTO) {
+	async execute(dto: ShowUserDTO) {
 		return this.userRepository.show(dto.id);
 	}
 }

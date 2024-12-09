@@ -1,8 +1,14 @@
-import type { UserProps } from "@/entities/User";
+import { userPropsSchema } from "@/entities/User";
+import type { z } from "zod";
 import Command from "../domain/Command";
 import type UserRepository from "../repositories/UserRepository";
 
-export type StoreUserDTO = Omit<UserProps, "id">;
+// DTO
+
+export const storeUserDTOSchema = userPropsSchema.omit({ id: true });
+export type StoreUserDTO = z.infer<typeof storeUserDTOSchema>;
+
+// Command
 
 export default class StoreUserCommand extends Command {
 	constructor(private userRepository: UserRepository) {

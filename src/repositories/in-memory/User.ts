@@ -18,13 +18,8 @@ export default class InMemoryUserRepository implements UserRepository {
 		return Promise.resolve(user ?? null);
 	}
 
-	findByNickname(nickname: string) {
-		const user = this.users.find((user) => user.nickname === nickname);
-		return user ?? null;
-	}
-
 	store({ nickname, password }: StoreUserData) {
-		const findedUser = this.findByNickname(nickname);
+		const findedUser = this.users.find((user) => user.nickname === nickname);
 
 		if (findedUser !== null)
 			throw new Error("User with this nickname already exists.");
@@ -38,18 +33,21 @@ export default class InMemoryUserRepository implements UserRepository {
 		return Promise.resolve(user);
 	}
 
-	async update(id: string, data: UpdateUserData) {
+	private getIndexById(id: string) {
 		const index = this.users.findIndex((user) => user.id === id);
-		if (index === -1) throw new Error(`User with ID "${id}" not found.`);
+		if (index === -1) throw new Error(`User with ID '${id}' not found.`);
 
+		return index;
+	}
+
+	update(id: string, data: UpdateUserData) {
+		const index = this.getIndexById(id);
 		const user = Object.assign(this.users[index], data);
 		return Promise.resolve(user);
 	}
 
 	destroy(id: string) {
-		const index = this.users.findIndex((user) => user.id === id);
-		if (index === -1) throw new Error(`User with ID "${id}" not found.`);
-
+		const index = this.getIndexById(id);
 		const [user] = this.users.splice(index, 1);
 		return Promise.resolve(user);
 	}
