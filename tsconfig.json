@@ -24,6 +24,10 @@
 		"noUnusedParameters": false,
 		"noPropertyAccessFromIndexSignature": false,
 
+		// Path Mapping
+		"baseUrl": "./src",
+		"paths": { "@/*": ["./*"] },
+
 		// Next.js
 		"incremental": true,
 		"esModuleInterop": true,

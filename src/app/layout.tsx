@@ -1,5 +1,8 @@
+import "@/styles/tailwind.css";
+
 import type { Metadata } from "next";
 import type { FC, PropsWithChildren } from "react";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
 	title: "Flow Cat",
@@ -8,7 +11,10 @@ export const metadata: Metadata = {
 
 const Layout: FC<PropsWithChildren> = ({ children }) => (
 	<html lang="en">
-		<body>{children}</body>
+		<body className="w-screen h-screen">
+			{children}
+			<Toaster />
+		</body>
 	</html>
 );
 
