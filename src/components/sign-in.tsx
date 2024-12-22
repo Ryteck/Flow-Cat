@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -11,17 +10,63 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { authClient } from "@/services/better-auth/client";
-import { Loader2 } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
-import { type FC, useState } from "react";
+import { useRouter } from "next/navigation";
+import type { FC } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { Button } from "./ui/button";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "./ui/form";
+
+const formSchema = z.object({
+	email: z.string().min(1, "Email is required").email(),
+	password: z.string().min(8, "Password must contain at least 8 characters"),
+	rememberMe: z.boolean(),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
 
 export const SignInComponent: FC = () => {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [loading, setLoading] = useState(false);
-	const [rememberMe, setRememberMe] = useState(false);
+	const router = useRouter();
+
+	const form = useForm<FormSchema>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			email: "",
+			password: "",
+			rememberMe: false,
+		},
+	});
+
+	const onSubmit = form.handleSubmit(
+		async ({ email, password, rememberMe }) => {
+			await authClient.signIn.email({
+				email,
+				password,
+				rememberMe,
+				callbackURL: "/dashboard",
+				fetchOptions: {
+					onError: (ctx) => {
+						toast.error(ctx.error.message);
+					},
+					onSuccess: () => {
+						router.push("/dashboard");
+					},
+				},
+			});
+		},
+	);
 
 	return (
 		<Card className="max-w-md">
@@ -32,60 +77,86 @@ export const SignInComponent: FC = () => {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<div className="grid gap-4">
-					<div className="grid gap-2">
-						<Label htmlFor="email">Email</Label>
-						<Input
-							id="email"
-							type="email"
-							placeholder="m@example.com"
-							required
-							onChange={(e) => {
-								setEmail(e.target.value);
-							}}
-							value={email}
+				<Form {...form}>
+					<form onSubmit={onSubmit} className="grid gap-4">
+						<FormField
+							control={form.control}
+							name="email"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Email</FormLabel>
+									<FormControl>
+										<Input
+											type="email"
+											placeholder="m@example.com"
+											autoComplete="email"
+											{...field}
+										/>
+									</FormControl>
+
+									<FormMessage />
+								</FormItem>
+							)}
 						/>
-					</div>
 
-					<div className="grid gap-2">
-						<div className="flex items-center">
-							<Label htmlFor="password">Password</Label>
-							<Link href="#" className="ml-auto inline-block text-sm underline">
-								Forgot your password?
-							</Link>
-						</div>
+						<FormField
+							control={form.control}
+							name="password"
+							render={({ field }) => (
+								<FormItem>
+									<div className="flex items-center">
+										<FormLabel>Password</FormLabel>
+										<Link
+											href="#"
+											className="ml-auto inline-block text-sm underline"
+										>
+											Forgot your password?
+										</Link>
+									</div>
 
-						<Input
-							id="password"
-							type="password"
-							placeholder="password"
-							autoComplete="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
+									<FormControl>
+										<Input
+											type="password"
+											placeholder="password"
+											autoComplete="password"
+											{...field}
+										/>
+									</FormControl>
+
+									<FormMessage />
+								</FormItem>
+							)}
 						/>
-					</div>
 
-					<div className="flex items-center gap-2">
-						<Checkbox
-							id="remember"
-							onClick={() => {
-								setRememberMe(!rememberMe);
-							}}
+						<FormField
+							control={form.control}
+							name="rememberMe"
+							render={({ field }) => (
+								<FormItem className="flex items-center space-x-2 space-y-0">
+									<FormControl>
+										<Checkbox
+											checked={field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</FormControl>
+									<FormLabel>Remember me</FormLabel>
+								</FormItem>
+							)}
 						/>
-						<Label htmlFor="remember">Remember me</Label>
-					</div>
 
-					<Button
-						type="submit"
-						className="w-full"
-						disabled={loading}
-						onClick={async () => {
-							await authClient.signIn.email({ email, password });
-						}}
-					>
-						{loading ? <Loader2 size={16} className="animate-spin" /> : "Login"}
-					</Button>
-				</div>
+						<Button
+							type="submit"
+							className="w-full"
+							disabled={form.formState.isSubmitting}
+						>
+							{form.formState.isSubmitting ? (
+								<Loader2Icon size={16} className="animate-spin" />
+							) : (
+								"Login"
+							)}
+						</Button>
+					</form>
+				</Form>
 			</CardContent>
 			<CardFooter>
 				<div className="flex justify-center w-full border-t py-4">

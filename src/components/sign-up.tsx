@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -10,38 +9,69 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { convertImageToBase64 } from "@/libs/image";
 import { authClient } from "@/services/better-auth/client";
-import { Loader2, X } from "lucide-react";
-import Image from "next/image";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type FC, useState } from "react";
+import type { FC } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
+import { Button } from "./ui/button";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "./ui/form";
+
+const formSchema = z.object({
+	firstName: z.string().min(1, "First name is required"),
+	lastName: z.string().min(1, "Last name is required"),
+	email: z.string().min(1, "Email is required").email(),
+	password: z.string().min(8, "Password must contain at least 8 characters"),
+	passwordConfirmation: z
+		.string()
+		.min(8, "Password confirmation must contain at least 8 characters"),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
 
 export const SignUpComponent: FC = () => {
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [passwordConfirmation, setPasswordConfirmation] = useState("");
-	const [image, setImage] = useState<File | null>(null);
-	const [imagePreview, setImagePreview] = useState<string | null>(null);
 	const router = useRouter();
-	const [loading, setLoading] = useState(false);
 
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			setImage(file);
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setImagePreview(reader.result as string);
-			};
-			reader.readAsDataURL(file);
-		}
-	};
+	const form = useForm<FormSchema>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			firstName: "",
+			lastName: "",
+			email: "",
+			password: "",
+			passwordConfirmation: "",
+		},
+	});
+
+	const onSubmit = form.handleSubmit(
+		async ({ firstName, lastName, email, password, passwordConfirmation }) => {
+			await authClient.signUp.email({
+				email,
+				password,
+				name: `${firstName} ${lastName}`,
+				callbackURL: "/dashboard",
+				fetchOptions: {
+					onError: (ctx) => {
+						toast.error(ctx.error.message);
+					},
+					onSuccess: async () => {
+						router.push("/dashboard");
+					},
+				},
+			});
+		},
+	);
 
 	return (
 		<Card className="max-w-md">
@@ -52,136 +82,123 @@ export const SignUpComponent: FC = () => {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<div className="grid gap-4">
-					<div className="grid grid-cols-2 gap-4">
-						<div className="grid gap-2">
-							<Label htmlFor="first-name">First name</Label>
-							<Input
-								id="first-name"
-								placeholder="Max"
-								required
-								onChange={(e) => {
-									setFirstName(e.target.value);
-								}}
-								value={firstName}
-							/>
-						</div>
-						<div className="grid gap-2">
-							<Label htmlFor="last-name">Last name</Label>
-							<Input
-								id="last-name"
-								placeholder="Robinson"
-								required
-								onChange={(e) => {
-									setLastName(e.target.value);
-								}}
-								value={lastName}
-							/>
-						</div>
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="email">Email</Label>
-						<Input
-							id="email"
-							type="email"
-							placeholder="m@example.com"
-							required
-							onChange={(e) => {
-								setEmail(e.target.value);
-							}}
-							value={email}
-						/>
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="password">Password</Label>
-						<Input
-							id="password"
-							type="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							autoComplete="new-password"
-							placeholder="Password"
-						/>
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="password">Confirm Password</Label>
-						<Input
-							id="password_confirmation"
-							type="password"
-							value={passwordConfirmation}
-							onChange={(e) => setPasswordConfirmation(e.target.value)}
-							autoComplete="new-password"
-							placeholder="Confirm Password"
-						/>
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="image">Profile Image (optional)</Label>
-						<div className="flex items-end gap-4">
-							{imagePreview && (
-								<div className="relative w-16 h-16 rounded-sm overflow-hidden">
-									<Image
-										src={imagePreview}
-										alt="Profile preview"
-										layout="fill"
-										objectFit="cover"
-									/>
-								</div>
-							)}
-							<div className="flex items-center gap-2 w-full">
-								<Input
-									id="image"
-									type="file"
-									accept="image/*"
-									onChange={handleImageChange}
-									className="w-full"
-								/>
-								{imagePreview && (
-									<X
-										className="cursor-pointer"
-										onClick={() => {
-											setImage(null);
-											setImagePreview(null);
-										}}
-									/>
+				<Form {...form}>
+					<form onSubmit={onSubmit} className="grid gap-4">
+						<div className="grid grid-cols-2 gap-4">
+							<FormField
+								control={form.control}
+								name="firstName"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>First name</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Max"
+												autoComplete="first-name"
+												{...field}
+											/>
+										</FormControl>
+
+										<FormMessage />
+									</FormItem>
 								)}
-							</div>
+							/>
+
+							<FormField
+								control={form.control}
+								name="lastName"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Last name</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Robinson"
+												autoComplete="last-name"
+												{...field}
+											/>
+										</FormControl>
+
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 						</div>
-					</div>
-					<Button
-						type="submit"
-						className="w-full"
-						disabled={loading}
-						onClick={async () => {
-							await authClient.signUp.email({
-								email,
-								password,
-								name: `${firstName} ${lastName}`,
-								image: image ? await convertImageToBase64(image) : "",
-								callbackURL: "/dashboard",
-								fetchOptions: {
-									onResponse: () => {
-										setLoading(false);
-									},
-									onRequest: () => {
-										setLoading(true);
-									},
-									onError: (ctx) => {
-										toast.error(ctx.error.message);
-									},
-									onSuccess: async () => {
-										router.push("/dashboard");
-									},
-								},
-							});
-						}}
-					>
-						{loading ? (
-							<Loader2 size={16} className="animate-spin" />
-						) : (
-							"Create an account"
-						)}
-					</Button>
-				</div>
+
+						<FormField
+							control={form.control}
+							name="email"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Email</FormLabel>
+									<FormControl>
+										<Input
+											type="email"
+											placeholder="m@example.com"
+											autoComplete="email"
+											{...field}
+										/>
+									</FormControl>
+
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="password"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Password</FormLabel>
+
+									<FormControl>
+										<Input
+											type="password"
+											placeholder="password"
+											autoComplete="password"
+											{...field}
+										/>
+									</FormControl>
+
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="passwordConfirmation"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Confirm Password</FormLabel>
+
+									<FormControl>
+										<Input
+											type="password"
+											placeholder="Confirm Password"
+											autoComplete="new-password"
+											{...field}
+										/>
+									</FormControl>
+
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<Button
+							type="submit"
+							className="w-full"
+							disabled={form.formState.isSubmitting}
+						>
+							{form.formState.isSubmitting ? (
+								<Loader2Icon size={16} className="animate-spin" />
+							) : (
+								"Create an account"
+							)}
+						</Button>
+					</form>
+				</Form>
 			</CardContent>
 			<CardFooter>
 				<div className="flex justify-center w-full border-t py-4">
