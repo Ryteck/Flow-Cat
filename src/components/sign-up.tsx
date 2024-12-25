@@ -13,7 +13,6 @@ import { authClient } from "@/services/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type { FC } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -41,8 +40,6 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 export const SignUpComponent: FC = () => {
-	const router = useRouter();
-
 	const form = useForm<FormSchema>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -56,17 +53,16 @@ export const SignUpComponent: FC = () => {
 
 	const onSubmit = form.handleSubmit(
 		async ({ firstName, lastName, email, password, passwordConfirmation }) => {
+			if (password !== passwordConfirmation)
+				return toast.warning("Passwords do not match");
+
 			await authClient.signUp.email({
 				email,
 				password,
 				name: `${firstName} ${lastName}`,
-				callbackURL: "/dashboard",
 				fetchOptions: {
 					onError: (ctx) => {
 						toast.error(ctx.error.message);
-					},
-					onSuccess: async () => {
-						router.push("/dashboard");
 					},
 				},
 			});

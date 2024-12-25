@@ -14,7 +14,6 @@ import { authClient } from "@/services/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type { FC } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -38,8 +37,6 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 export const SignInComponent: FC = () => {
-	const router = useRouter();
-
 	const form = useForm<FormSchema>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -55,13 +52,9 @@ export const SignInComponent: FC = () => {
 				email,
 				password,
 				rememberMe,
-				callbackURL: "/dashboard",
 				fetchOptions: {
 					onError: (ctx) => {
 						toast.error(ctx.error.message);
-					},
-					onSuccess: () => {
-						router.push("/dashboard");
 					},
 				},
 			});

@@ -13,7 +13,7 @@ const Layout: FC<PropsWithChildren> = ({ children }) => (
 	<html lang="en">
 		<body className="w-screen h-screen">
 			{children}
-			<Toaster />
+			<Toaster richColors />
 		</body>
 	</html>
 );
