@@ -21,7 +21,6 @@ export const SessionProviderComponent: FC<PropsWithChildren<Props>> = ({
 
 	const [isLoading, setIsLoading] = useState(true);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(() => {
 		if (!session.isPending) {
 			if (mode === "auth" && session.data === null) {

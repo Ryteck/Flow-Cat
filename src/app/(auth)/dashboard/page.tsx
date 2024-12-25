@@ -1,28 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { authClient } from "@/services/better-auth/client";
-import { useAuthStore } from "@/store/auth";
 import type { FC } from "react";
 
-const Page: FC = () => {
-	const authStore = useAuthStore();
-	const authData = authStore.getData();
-
-	return (
-		<main className="h-full w-full flex flex-col gap-2">
-			<pre>{JSON.stringify(authData, null, 2)}</pre>
-
-			<Button
-				onClick={async () => {
-					await authClient.signOut();
-				}}
-				className="mx-auto px-8"
-			>
-				Exit
-			</Button>
-		</main>
-	);
-};
+const Page: FC = () => (
+	<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+		<div className="grid auto-rows-min gap-4 md:grid-cols-3">
+			<div className="aspect-video rounded-xl bg-muted/50" />
+			<div className="aspect-video rounded-xl bg-muted/50" />
+			<div className="aspect-video rounded-xl bg-muted/50" />
+		</div>
+		<div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+	</div>
+);
 
 export default Page;
