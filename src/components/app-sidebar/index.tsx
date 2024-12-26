@@ -8,31 +8,22 @@ import {
 	SidebarRail,
 } from "@/components/ui/sidebar";
 import {
-	AudioWaveformIcon,
 	BookOpenIcon,
 	BotIcon,
-	CommandIcon,
 	FrameIcon,
-	GalleryVerticalEndIcon,
 	type LucideIcon,
 	MapIcon,
 	PieChartIcon,
 	Settings2Icon,
 	SquareTerminalIcon,
 } from "lucide-react";
-import type { ComponentProps, ElementType, FC } from "react";
+import type { ComponentProps, FC } from "react";
 import { NavMain } from "./nav-main";
 import { NavProjects } from "./nav-projects";
 import { NavUser } from "./nav-user";
-import { TeamSwitcher } from "./team-switcher";
+import { SidebarOrganizationsComponent } from "./organizations";
 
 interface Data {
-	teams: {
-		name: string;
-		logo: ElementType;
-		plan: string;
-	}[];
-
 	items: {
 		title: string;
 		url: string;
@@ -52,12 +43,6 @@ interface Data {
 }
 
 const data: Data = {
-	teams: [
-		{ name: "Acme Inc", logo: GalleryVerticalEndIcon, plan: "Enterprise" },
-		{ name: "Acme Corp.", logo: AudioWaveformIcon, plan: "Startup" },
-		{ name: "Evil Corp.", logo: CommandIcon, plan: "Free" },
-	],
-
 	items: [
 		{
 			title: "Playground",
@@ -116,7 +101,7 @@ export type AppSidebarProps = ComponentProps<typeof Sidebar>;
 export const AppSidebar: FC<AppSidebarProps> = ({ ...props }) => (
 	<Sidebar collapsible="icon" {...props}>
 		<SidebarHeader>
-			<TeamSwitcher teams={data.teams} />
+			<SidebarOrganizationsComponent />
 		</SidebarHeader>
 		<SidebarContent>
 			<NavMain items={data.items} />
