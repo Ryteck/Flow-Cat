@@ -25,7 +25,7 @@ import {
 import { useRouter } from "next/navigation";
 import type { FC } from "react";
 
-export const SidebarOrganizationsComponent: FC = () => {
+export const SidebarOrganizationSwitcherComponent: FC = () => {
 	const router = useRouter();
 
 	const authOrganizations = authClient.useListOrganizations();
@@ -111,14 +111,14 @@ export const SidebarOrganizationsComponent: FC = () => {
 						<DropdownMenuItem
 							className="gap-2 p-2"
 							onClick={() => {
-								router.push("/organization");
+								router.push("/create-organization");
 							}}
 						>
 							<div className="flex size-6 items-center justify-center rounded-md border bg-background">
 								<Plus className="size-4" />
 							</div>
 							<div className="font-medium text-muted-foreground">
-								Add organization
+								Create Organization
 							</div>
 						</DropdownMenuItem>
 					</DropdownMenuContent>

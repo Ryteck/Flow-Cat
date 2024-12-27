@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import type { FC } from "react";
 
-export const NavUser: FC = () => {
+export const SidebarNavUserComponent: FC = () => {
 	const authStore = useAuthStore();
 	const authData = authStore.getData();
 
