@@ -46,25 +46,23 @@ export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
 		const slug = generateSlugWithTimestamp(name);
 
 		// editMode = True --- Update
-		if (
-			editMode &&
-			!activeOrganization.isPending &&
-			activeOrganization.data !== null
-		)
-			await authClient.organization.update({
-				organizationId: activeOrganization.data.id,
-				data: { name, slug },
-				fetchOptions: {
-					onError: (ctx) => {
-						toast.error(ctx.error.message);
+		if (editMode)
+			if (activeOrganization.data !== null)
+				await authClient.organization.update({
+					organizationId: activeOrganization.data.id,
+					data: { name, slug },
+					fetchOptions: {
+						onError: (ctx) => {
+							toast.error(ctx.error.message);
+						},
+						onSuccess: () => {
+							router.push("/dashboard");
+						},
 					},
-					onSuccess: () => {
-						router.push("/dashboard");
-					},
-				},
-			});
-		// editMode = True --- Create
-		else if (!editMode)
+				});
+			else toast.error("Organization not loaded");
+		// editMode = False --- Create
+		else
 			await authClient.organization.create({
 				name,
 				slug,
@@ -80,11 +78,7 @@ export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
 	});
 
 	useEffect(() => {
-		if (
-			editMode &&
-			!activeOrganization.isPending &&
-			activeOrganization.data !== null
-		)
+		if (editMode && activeOrganization.data !== null)
 			form.setValue("name", activeOrganization.data.name);
 	}, [editMode, activeOrganization.isPending, activeOrganization.data]);
 
@@ -114,30 +108,31 @@ export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
 				/>
 
 				<div className="flex gap-2">
-					{editMode && !activeOrganization.isPending && (
+					{editMode && (
 						<Button
 							type="button"
 							className="w-full"
 							disabled={form.formState.isSubmitting}
 							variant="destructive"
-							onClick={() => {
-								if (activeOrganization.data !== null)
-									return authClient.organization.delete({
-										organizationId: activeOrganization.data.id,
-										fetchOptions: {
-											onError: (ctx) => {
-												toast.error(ctx.error.message);
-											},
-											onSuccess: async () => {
-												await authClient.organization.setActive({
-													organizationId: null,
-												});
+							onClick={() =>
+								activeOrganization.data === null
+									? toast.error("Organization not loaded")
+									: authClient.organization.delete({
+											organizationId: activeOrganization.data.id,
+											fetchOptions: {
+												onError: (ctx) => {
+													toast.error(ctx.error.message);
+												},
+												onSuccess: async () => {
+													await authClient.organization.setActive({
+														organizationId: null,
+													});
 
-												router.push("/dashboard");
+													router.push("/dashboard");
+												},
 											},
-										},
-									});
-							}}
+										})
+							}
 						>
 							Delete Organization
 						</Button>

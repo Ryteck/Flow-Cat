@@ -4,6 +4,7 @@ export enum BREADCRUMB_PAGE_NAME {
 	DASHBOARD = "Dashboard",
 	CREATE_ORGANIZATION = "Create Organization",
 	EDIT_ORGANIZATION = "Edit Organization",
+	EDIT_ACCOUNT = "Account",
 }
 
 interface BreadcrumbPage {
@@ -25,6 +26,11 @@ const breadcrumbPages: Record<BREADCRUMB_PAGE_NAME, BreadcrumbPage> = {
 	[BREADCRUMB_PAGE_NAME.EDIT_ORGANIZATION]: {
 		name: BREADCRUMB_PAGE_NAME.EDIT_ORGANIZATION,
 		path: "/edit-organization",
+	},
+
+	[BREADCRUMB_PAGE_NAME.EDIT_ACCOUNT]: {
+		name: BREADCRUMB_PAGE_NAME.EDIT_ACCOUNT,
+		path: "/account",
 	},
 };
 

@@ -16,6 +16,7 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
+import { getInitials } from "@/libs/utils";
 import { authClient } from "@/services/better-auth/client";
 import { useAuthStore } from "@/store/auth";
 import {
@@ -26,9 +27,12 @@ import {
 	LogOut,
 	Sparkles,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { FC } from "react";
 
 export const SidebarNavUserComponent: FC = () => {
+	const router = useRouter();
+
 	const authStore = useAuthStore();
 	const authData = authStore.getData();
 
@@ -48,11 +52,7 @@ export const SidebarNavUserComponent: FC = () => {
 							<Avatar className="h-8 w-8 rounded-lg">
 								<AvatarImage src={avatar} alt={authData.user.name} />
 								<AvatarFallback className="rounded-lg">
-									{authData.user.name
-										.split(" ")
-										.map((arg) => arg[0])
-										.join("")
-										.toUpperCase()}
+									{getInitials(authData.user.name)}
 								</AvatarFallback>
 							</Avatar>
 							<div className="grid flex-1 text-left text-sm leading-tight">
@@ -74,7 +74,9 @@ export const SidebarNavUserComponent: FC = () => {
 							<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 								<Avatar className="h-8 w-8 rounded-lg">
 									<AvatarImage src={avatar} alt={authData.user.name} />
-									<AvatarFallback className="rounded-lg">CN</AvatarFallback>
+									<AvatarFallback className="rounded-lg">
+										{getInitials(authData.user.name)}
+									</AvatarFallback>
 								</Avatar>
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-semibold">
@@ -95,7 +97,7 @@ export const SidebarNavUserComponent: FC = () => {
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
+							<DropdownMenuItem onClick={() => router.push("/account")}>
 								<BadgeCheck />
 								Account
 							</DropdownMenuItem>
