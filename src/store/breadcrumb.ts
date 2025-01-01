@@ -7,6 +7,7 @@ export enum BREADCRUMB_PAGE_NAME {
 	EDIT_ACCOUNT = "Account",
 	PROJECTS = "Projects",
 	CREATE_PROJECT = "Create Project",
+	CASH_FLOW = "Cash Flow",
 }
 
 const breadcrumbPagePaths: Record<BREADCRUMB_PAGE_NAME, string> = {
@@ -16,6 +17,7 @@ const breadcrumbPagePaths: Record<BREADCRUMB_PAGE_NAME, string> = {
 	[BREADCRUMB_PAGE_NAME.EDIT_ACCOUNT]: "/account",
 	[BREADCRUMB_PAGE_NAME.PROJECTS]: "/projects",
 	[BREADCRUMB_PAGE_NAME.CREATE_PROJECT]: "/create-project",
+	[BREADCRUMB_PAGE_NAME.CASH_FLOW]: "/cash-flow",
 };
 
 interface BreadcrumbPage {

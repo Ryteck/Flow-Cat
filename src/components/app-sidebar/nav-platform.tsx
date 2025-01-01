@@ -8,7 +8,12 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/services/better-auth/client";
-import { LayersIcon, LayoutDashboardIcon, PencilIcon } from "lucide-react";
+import {
+	ArrowDownUpIcon,
+	LayersIcon,
+	LayoutDashboardIcon,
+	PencilIcon,
+} from "lucide-react";
 import Link from "next/link";
 import type { FC } from "react";
 
@@ -30,6 +35,15 @@ export const SidebarNavPlatformComponent: FC = () => {
 
 				<SidebarMenuItem>
 					<SidebarMenuButton asChild>
+						<Link href="/cash-flow">
+							<ArrowDownUpIcon />
+							<span>Cash Flow</span>
+						</Link>
+					</SidebarMenuButton>
+				</SidebarMenuItem>
+
+				<SidebarMenuItem>
+					<SidebarMenuButton asChild>
 						<Link href="/projects">
 							<LayersIcon />
 							<span>
@@ -44,7 +58,7 @@ export const SidebarNavPlatformComponent: FC = () => {
 						<SidebarMenuButton asChild>
 							<Link href="/edit-organization">
 								<PencilIcon />
-								<span>Edit organization</span>
+								<span>Edit Organization</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

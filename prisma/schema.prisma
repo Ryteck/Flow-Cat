@@ -18,9 +18,10 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
-  members     Member[]
-  invitations Invitation[]
-  projects    Project[]
+  members           Member[]
+  invitations       Invitation[]
+  projects          Project[]
+  cashFlowMovements CashFlowMovement[]
 
   @@unique([email])
   @@map("user")
@@ -74,15 +75,16 @@ model Verification {
 }
 
 model Organization {
-  id          String       @id
-  name        String
-  slug        String?
-  logo        String?
-  createdAt   DateTime
-  metadata    String?
-  members     Member[]
-  invitations Invitation[]
-  projects    Project[]
+  id                String             @id
+  name              String
+  slug              String?
+  logo              String?
+  createdAt         DateTime
+  metadata          String?
+  members           Member[]
+  invitations       Invitation[]
+  projects          Project[]
+  cashFlowMovements CashFlowMovement[]
 
   @@unique([slug])
   @@map("organization")
@@ -125,4 +127,19 @@ model Project {
   organization   Organization? @relation(fields: [organizationId], references: [id])
 
   @@map("project")
+}
+
+model CashFlowMovement {
+  id             String        @id @default(uuid())
+  name           String
+  description    String
+  date           DateTime
+  value          Float
+  output         Boolean
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("cash_flow_movement")
 }
