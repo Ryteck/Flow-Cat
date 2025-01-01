@@ -78,7 +78,7 @@ export const FormChangePasswordComponent: FC = () => {
 								<Input
 									type="password"
 									placeholder="Current Password"
-									autoComplete="password"
+									autoComplete="current-password"
 									{...field}
 								/>
 							</FormControl>
@@ -99,7 +99,7 @@ export const FormChangePasswordComponent: FC = () => {
 								<Input
 									type="password"
 									placeholder="New Password"
-									autoComplete="password"
+									autoComplete="new-password"
 									{...field}
 								/>
 							</FormControl>

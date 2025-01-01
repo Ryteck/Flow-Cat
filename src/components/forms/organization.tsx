@@ -56,7 +56,7 @@ export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
 							toast.error(ctx.error.message);
 						},
 						onSuccess: () => {
-							router.push("/dashboard");
+							toast.success("Organization Updated");
 						},
 					},
 				});
@@ -99,7 +99,11 @@ export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
 						<FormItem>
 							<FormLabel>Name</FormLabel>
 							<FormControl>
-								<Input placeholder="Acme Inc" autoComplete="name" {...field} />
+								<Input
+									placeholder="Acme Inc"
+									autoComplete="organization-name"
+									{...field}
+								/>
 							</FormControl>
 
 							<FormMessage />
@@ -127,8 +131,6 @@ export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
 													await authClient.organization.setActive({
 														organizationId: null,
 													});
-
-													router.push("/dashboard");
 												},
 											},
 										})

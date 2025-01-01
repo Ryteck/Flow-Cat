@@ -5,34 +5,23 @@ export enum BREADCRUMB_PAGE_NAME {
 	CREATE_ORGANIZATION = "Create Organization",
 	EDIT_ORGANIZATION = "Edit Organization",
 	EDIT_ACCOUNT = "Account",
+	PROJECTS = "Projects",
+	CREATE_PROJECT = "Create Project",
 }
+
+const breadcrumbPagePaths: Record<BREADCRUMB_PAGE_NAME, string> = {
+	[BREADCRUMB_PAGE_NAME.DASHBOARD]: "/dashboard",
+	[BREADCRUMB_PAGE_NAME.CREATE_ORGANIZATION]: "/create-organization",
+	[BREADCRUMB_PAGE_NAME.EDIT_ORGANIZATION]: "/edit-organization",
+	[BREADCRUMB_PAGE_NAME.EDIT_ACCOUNT]: "/account",
+	[BREADCRUMB_PAGE_NAME.PROJECTS]: "/projects",
+	[BREADCRUMB_PAGE_NAME.CREATE_PROJECT]: "/create-project",
+};
 
 interface BreadcrumbPage {
-	name: string;
+	name: BREADCRUMB_PAGE_NAME;
 	path: string;
 }
-
-const breadcrumbPages: Record<BREADCRUMB_PAGE_NAME, BreadcrumbPage> = {
-	[BREADCRUMB_PAGE_NAME.DASHBOARD]: {
-		name: BREADCRUMB_PAGE_NAME.DASHBOARD,
-		path: "/dashboard",
-	},
-
-	[BREADCRUMB_PAGE_NAME.CREATE_ORGANIZATION]: {
-		name: BREADCRUMB_PAGE_NAME.CREATE_ORGANIZATION,
-		path: "/create-organization",
-	},
-
-	[BREADCRUMB_PAGE_NAME.EDIT_ORGANIZATION]: {
-		name: BREADCRUMB_PAGE_NAME.EDIT_ORGANIZATION,
-		path: "/edit-organization",
-	},
-
-	[BREADCRUMB_PAGE_NAME.EDIT_ACCOUNT]: {
-		name: BREADCRUMB_PAGE_NAME.EDIT_ACCOUNT,
-		path: "/account",
-	},
-};
 
 interface BreadcrumbStoreState {
 	pages: BreadcrumbPage[];
@@ -43,12 +32,17 @@ const initialBreadcrumbStoreState: BreadcrumbStoreState = {
 };
 
 interface BreadcrumbStore extends BreadcrumbStoreState {
-	setPages: (...pages: BREADCRUMB_PAGE_NAME[]) => void;
+	setPages: (...names: BREADCRUMB_PAGE_NAME[]) => void;
 }
 
 export const useBreadcrumbStore = create<BreadcrumbStore>()((set, get) => ({
 	...initialBreadcrumbStoreState,
 
-	setPages: (...pages) =>
-		set({ pages: pages.map((page) => breadcrumbPages[page]) }),
+	setPages: (...names) =>
+		set({
+			pages: names.map((name) => {
+				const path = breadcrumbPagePaths[name];
+				return { name, path };
+			}),
+		}),
 }));

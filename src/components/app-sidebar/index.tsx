@@ -6,7 +6,7 @@ import {
 	SidebarRail,
 } from "@/components/ui/sidebar";
 import type { ComponentProps, FC } from "react";
-import { SidebarNavOrganizationComponent } from "./nav-organization";
+import { SidebarNavPlatformComponent } from "./nav-platform";
 import { SidebarNavUserComponent } from "./nav-user";
 import { SidebarOrganizationSwitcherComponent } from "./organization-switcher";
 
@@ -18,7 +18,7 @@ export const AppSidebar: FC<AppSidebarProps> = ({ ...props }) => (
 			<SidebarOrganizationSwitcherComponent />
 		</SidebarHeader>
 		<SidebarContent>
-			<SidebarNavOrganizationComponent />
+			<SidebarNavPlatformComponent />
 		</SidebarContent>
 		<SidebarFooter>
 			<SidebarNavUserComponent />

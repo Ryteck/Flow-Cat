@@ -20,6 +20,7 @@ model User {
 
   members     Member[]
   invitations Invitation[]
+  projects    Project[]
 
   @@unique([email])
   @@map("user")
@@ -81,6 +82,7 @@ model Organization {
   metadata    String?
   members     Member[]
   invitations Invitation[]
+  projects    Project[]
 
   @@unique([slug])
   @@map("organization")
@@ -110,4 +112,17 @@ model Invitation {
   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
 
   @@map("invitation")
+}
+
+model Project {
+  id             String        @id @default(uuid())
+  name           String
+  slug           String        @unique
+  description    String
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  @@map("project")
 }
