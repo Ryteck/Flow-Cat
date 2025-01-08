@@ -17,12 +17,15 @@ import projectFormSchema from "@/schemas/forms/project";
 import { authClient } from "@/services/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { type FC, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { useServerAction } from "zsa-react";
 
 export const FormProjectComponent: FC = () => {
 	const activeOrganization = authClient.useActiveOrganization();
+	const router = useRouter();
 
 	const createProject = useServerAction(createProjectAction);
 
@@ -36,13 +39,11 @@ export const FormProjectComponent: FC = () => {
 	});
 
 	const onSubmit = form.handleSubmit(async (input) => {
-		const [, error] = await createProject.execute(input);
+		const [createdProject, error] = await createProject.execute(input);
 
-		if (error) {
-			return;
-		}
+		if (error) return toast.error(error.message);
 
-		form.reset();
+		router.push(`projects/${createdProject.slug}`);
 	});
 
 	useEffect(() => {

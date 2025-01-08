@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { FC } from "react";
+import { SidebarNavUserColorModeToggle } from "./color-mode-toggle";
 
 export const SidebarNavUserComponent: FC = () => {
 	const router = useRouter();
@@ -97,6 +98,7 @@ export const SidebarNavUserComponent: FC = () => {
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
+							<SidebarNavUserColorModeToggle />
 							<DropdownMenuItem onClick={() => router.push("/account")}>
 								<BadgeCheck />
 								Account

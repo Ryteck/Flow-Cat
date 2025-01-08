@@ -9,6 +9,14 @@ export const listProjectsByUserId = (userId: string): Promise<Project[]> =>
 		},
 	});
 
+export const findProjectByUserIdAndSlug = (
+	userId: string,
+	slug: string,
+): Promise<Project | null> =>
+	prismaClient.project.findUnique({
+		where: { userId, slug },
+	});
+
 export interface StoreProjectData {
 	name: string;
 	description: string;

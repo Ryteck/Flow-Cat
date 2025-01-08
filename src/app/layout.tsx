@@ -1,6 +1,7 @@
 import "@/styles/tailwind.css";
 
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import type { FC, PropsWithChildren } from "react";
 import { Toaster } from "sonner";
 
@@ -10,10 +11,17 @@ export const metadata: Metadata = {
 };
 
 const Layout: FC<PropsWithChildren> = ({ children }) => (
-	<html lang="en">
+	<html lang="en" suppressHydrationWarning>
 		<body className="w-screen h-screen">
-			{children}
-			<Toaster richColors />
+			<ThemeProvider
+				attribute="class"
+				defaultTheme="system"
+				enableSystem
+				disableTransitionOnChange
+			>
+				{children}
+				<Toaster richColors />
+			</ThemeProvider>
 		</body>
 	</html>
 );

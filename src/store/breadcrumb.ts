@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 export enum BREADCRUMB_PAGE_NAME {
-	DASHBOARD = "Dashboard",
-	CREATE_ORGANIZATION = "Create Organization",
-	EDIT_ORGANIZATION = "Edit Organization",
-	EDIT_ACCOUNT = "Account",
-	PROJECTS = "Projects",
-	CREATE_PROJECT = "Create Project",
-	CASH_FLOW = "Cash Flow",
+	DASHBOARD = "dashboard",
+	CREATE_ORGANIZATION = "create organization",
+	EDIT_ORGANIZATION = "edit organization",
+	EDIT_ACCOUNT = "account",
+	PROJECTS = "projects",
+	CREATE_PROJECT = "create project",
+	CASH_FLOW = "cash flow",
 }
 
 const breadcrumbPagePaths: Record<BREADCRUMB_PAGE_NAME, string> = {
@@ -20,13 +20,23 @@ const breadcrumbPagePaths: Record<BREADCRUMB_PAGE_NAME, string> = {
 	[BREADCRUMB_PAGE_NAME.CASH_FLOW]: "/cash-flow",
 };
 
-interface BreadcrumbPage {
+export interface BreadcrumbPage {
+	type?: undefined;
 	name: BREADCRUMB_PAGE_NAME;
+}
+
+export interface BreadcrumbPageWithPath extends BreadcrumbPage {
+	path: string;
+}
+
+export interface BreadcrumbCustomPage {
+	type: "custom";
+	name: string;
 	path: string;
 }
 
 interface BreadcrumbStoreState {
-	pages: BreadcrumbPage[];
+	pages: Array<BreadcrumbPageWithPath | BreadcrumbCustomPage>;
 }
 
 const initialBreadcrumbStoreState: BreadcrumbStoreState = {
@@ -34,17 +44,18 @@ const initialBreadcrumbStoreState: BreadcrumbStoreState = {
 };
 
 interface BreadcrumbStore extends BreadcrumbStoreState {
-	setPages: (...names: BREADCRUMB_PAGE_NAME[]) => void;
+	setPages: (...pages: Array<BreadcrumbPage | BreadcrumbCustomPage>) => void;
 }
 
 export const useBreadcrumbStore = create<BreadcrumbStore>()((set, get) => ({
 	...initialBreadcrumbStoreState,
 
-	setPages: (...names) =>
+	setPages: (...pages) =>
 		set({
-			pages: names.map((name) => {
-				const path = breadcrumbPagePaths[name];
-				return { name, path };
+			pages: pages.map((page) => {
+				if (page.type === "custom") return page;
+				const path = breadcrumbPagePaths[page.name];
+				return { ...page, path };
 			}),
 		}),
 }));

@@ -1,5 +1,6 @@
 "use client";
 
+import { FormCashFlowMovementComponent } from "@/components/forms/cash-flow-movement";
 import {
 	Card,
 	CardContent,
@@ -23,144 +24,99 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useBreadcrumbPage } from "@/hooks/breadcrumb-page";
+import { useCachedFetch } from "@/hooks/cached-fetch";
+import { convertToSimpleDate, parseDateWithoutTimezone } from "@/libs/date";
+import type { CompiledCashFlow } from "@/repositories/cash-flow-movement";
+import { authClient } from "@/services/better-auth/client";
 import { BREADCRUMB_PAGE_NAME } from "@/store/breadcrumb";
-import { type FC, useState } from "react";
+import ms from "ms";
+import { type FC, useEffect, useState } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
-const chartData = [
-	{ date: "2024-04-01", desktop: 222, mobile: 150 },
-	{ date: "2024-04-02", desktop: 97, mobile: 180 },
-	{ date: "2024-04-03", desktop: 167, mobile: 120 },
-	{ date: "2024-04-04", desktop: 242, mobile: 260 },
-	{ date: "2024-04-05", desktop: 373, mobile: 290 },
-	{ date: "2024-04-06", desktop: 301, mobile: 340 },
-	{ date: "2024-04-07", desktop: 245, mobile: 180 },
-	{ date: "2024-04-08", desktop: 409, mobile: 320 },
-	{ date: "2024-04-09", desktop: 59, mobile: 110 },
-	{ date: "2024-04-10", desktop: 261, mobile: 190 },
-	{ date: "2024-04-11", desktop: 327, mobile: 350 },
-	{ date: "2024-04-12", desktop: 292, mobile: 210 },
-	{ date: "2024-04-13", desktop: 342, mobile: 380 },
-	{ date: "2024-04-14", desktop: 137, mobile: 220 },
-	{ date: "2024-04-15", desktop: 120, mobile: 170 },
-	{ date: "2024-04-16", desktop: 138, mobile: 190 },
-	{ date: "2024-04-17", desktop: 446, mobile: 360 },
-	{ date: "2024-04-18", desktop: 364, mobile: 410 },
-	{ date: "2024-04-19", desktop: 243, mobile: 180 },
-	{ date: "2024-04-20", desktop: 89, mobile: 150 },
-	{ date: "2024-04-21", desktop: 137, mobile: 200 },
-	{ date: "2024-04-22", desktop: 224, mobile: 170 },
-	{ date: "2024-04-23", desktop: 138, mobile: 230 },
-	{ date: "2024-04-24", desktop: 387, mobile: 290 },
-	{ date: "2024-04-25", desktop: 215, mobile: 250 },
-	{ date: "2024-04-26", desktop: 75, mobile: 130 },
-	{ date: "2024-04-27", desktop: 383, mobile: 420 },
-	{ date: "2024-04-28", desktop: 122, mobile: 180 },
-	{ date: "2024-04-29", desktop: 315, mobile: 240 },
-	{ date: "2024-04-30", desktop: 454, mobile: 380 },
-	{ date: "2024-05-01", desktop: 165, mobile: 220 },
-	{ date: "2024-05-02", desktop: 293, mobile: 310 },
-	{ date: "2024-05-03", desktop: 247, mobile: 190 },
-	{ date: "2024-05-04", desktop: 385, mobile: 420 },
-	{ date: "2024-05-05", desktop: 481, mobile: 390 },
-	{ date: "2024-05-06", desktop: 498, mobile: 520 },
-	{ date: "2024-05-07", desktop: 388, mobile: 300 },
-	{ date: "2024-05-08", desktop: 149, mobile: 210 },
-	{ date: "2024-05-09", desktop: 227, mobile: 180 },
-	{ date: "2024-05-10", desktop: 293, mobile: 330 },
-	{ date: "2024-05-11", desktop: 335, mobile: 270 },
-	{ date: "2024-05-12", desktop: 197, mobile: 240 },
-	{ date: "2024-05-13", desktop: 197, mobile: 160 },
-	{ date: "2024-05-14", desktop: 448, mobile: 490 },
-	{ date: "2024-05-15", desktop: 473, mobile: 380 },
-	{ date: "2024-05-16", desktop: 338, mobile: 400 },
-	{ date: "2024-05-17", desktop: 499, mobile: 420 },
-	{ date: "2024-05-18", desktop: 315, mobile: 350 },
-	{ date: "2024-05-19", desktop: 235, mobile: 180 },
-	{ date: "2024-05-20", desktop: 177, mobile: 230 },
-	{ date: "2024-05-21", desktop: 82, mobile: 140 },
-	{ date: "2024-05-22", desktop: 81, mobile: 120 },
-	{ date: "2024-05-23", desktop: 252, mobile: 290 },
-	{ date: "2024-05-24", desktop: 294, mobile: 220 },
-	{ date: "2024-05-25", desktop: 201, mobile: 250 },
-	{ date: "2024-05-26", desktop: 213, mobile: 170 },
-	{ date: "2024-05-27", desktop: 420, mobile: 460 },
-	{ date: "2024-05-28", desktop: 233, mobile: 190 },
-	{ date: "2024-05-29", desktop: 78, mobile: 130 },
-	{ date: "2024-05-30", desktop: 340, mobile: 280 },
-	{ date: "2024-05-31", desktop: 178, mobile: 230 },
-	{ date: "2024-06-01", desktop: 178, mobile: 200 },
-	{ date: "2024-06-02", desktop: 470, mobile: 410 },
-	{ date: "2024-06-03", desktop: 103, mobile: 160 },
-	{ date: "2024-06-04", desktop: 439, mobile: 380 },
-	{ date: "2024-06-05", desktop: 88, mobile: 140 },
-	{ date: "2024-06-06", desktop: 294, mobile: 250 },
-	{ date: "2024-06-07", desktop: 323, mobile: 370 },
-	{ date: "2024-06-08", desktop: 385, mobile: 320 },
-	{ date: "2024-06-09", desktop: 438, mobile: 480 },
-	{ date: "2024-06-10", desktop: 155, mobile: 200 },
-	{ date: "2024-06-11", desktop: 92, mobile: 150 },
-	{ date: "2024-06-12", desktop: 492, mobile: 420 },
-	{ date: "2024-06-13", desktop: 81, mobile: 130 },
-	{ date: "2024-06-14", desktop: 426, mobile: 380 },
-	{ date: "2024-06-15", desktop: 307, mobile: 350 },
-	{ date: "2024-06-16", desktop: 371, mobile: 310 },
-	{ date: "2024-06-17", desktop: 475, mobile: 520 },
-	{ date: "2024-06-18", desktop: 107, mobile: 170 },
-	{ date: "2024-06-19", desktop: 341, mobile: 290 },
-	{ date: "2024-06-20", desktop: 408, mobile: 450 },
-	{ date: "2024-06-21", desktop: 169, mobile: 210 },
-	{ date: "2024-06-22", desktop: 317, mobile: 270 },
-	{ date: "2024-06-23", desktop: 480, mobile: 530 },
-	{ date: "2024-06-24", desktop: 132, mobile: 180 },
-	{ date: "2024-06-25", desktop: 141, mobile: 190 },
-	{ date: "2024-06-26", desktop: 434, mobile: 380 },
-	{ date: "2024-06-27", desktop: 448, mobile: 490 },
-	{ date: "2024-06-28", desktop: 149, mobile: 200 },
-	{ date: "2024-06-29", desktop: 103, mobile: 160 },
-	{ date: "2024-06-30", desktop: 446, mobile: 400 },
-];
-const chartConfig = {
-	visitors: {
-		label: "Visitors",
-	},
-	desktop: {
-		label: "Desktop",
+type ChartData = Array<{
+	date: string;
+	input: number;
+	output: number;
+}>;
+
+const chartConfig: ChartConfig = {
+	input: {
+		label: "Input",
 		color: "hsl(var(--chart-2))",
 	},
-	mobile: {
-		label: "Mobile",
-		color: "hsl(var(--chart-1))",
+	output: {
+		label: "Output",
+		color: "hsl(var(--chart-5))",
 	},
-} satisfies ChartConfig;
+};
+
+function generateStartChartData(startDate: Date): ChartData {
+	const result: ChartData = [];
+
+	const today = new Date();
+	const currentDate = new Date(startDate);
+
+	while (currentDate <= today) {
+		result.push({
+			date: convertToSimpleDate(currentDate),
+			input: 0,
+			output: 0,
+		});
+
+		currentDate.setDate(currentDate.getDate() + 1);
+	}
+
+	return result;
+}
 
 const Page: FC = () => {
 	useBreadcrumbPage(
-		BREADCRUMB_PAGE_NAME.DASHBOARD,
-		BREADCRUMB_PAGE_NAME.CASH_FLOW,
+		{ name: BREADCRUMB_PAGE_NAME.DASHBOARD },
+		{ name: BREADCRUMB_PAGE_NAME.CASH_FLOW },
 	);
 
-	const [timeRange, setTimeRange] = useState("90d");
+	const activeOrganization = authClient.useActiveOrganization();
+	const organizationId = activeOrganization.data?.id;
 
-	const filteredData = chartData.filter((item) => {
-		const date = new Date(item.date);
+	const organizationQuery = organizationId
+		? `organizationId=${organizationId}&`
+		: "";
 
-		const referenceDate = new Date("2024-06-30");
+	const [timeRange, setTimeRange] = useState<string>("90d");
+	const breakPoint = new Date(new Date().getTime() - ms(timeRange));
 
-		let daysToSubtract = 90;
+	breakPoint.setHours(0);
+	breakPoint.setMinutes(0);
+	breakPoint.setSeconds(0);
+	breakPoint.setMilliseconds(0);
 
-		if (timeRange === "30d") {
-			daysToSubtract = 30;
-		} else if (timeRange === "7d") {
-			daysToSubtract = 7;
+	const [chartData, setChartData] = useState<ChartData>(
+		generateStartChartData(breakPoint),
+	);
+
+	const compiledCashFlow = useCachedFetch<CompiledCashFlow>(
+		`/api/cash-flow?${organizationQuery}breakPoint=${breakPoint.toISOString()}`,
+		{ keepPreviousData: true },
+	);
+
+	useEffect(() => {
+		if (compiledCashFlow.isLoading === false) {
+			const initialChartData = generateStartChartData(breakPoint);
+
+			for (const data of compiledCashFlow.data?.movements ?? []) {
+				const date = convertToSimpleDate(new Date(data.date));
+				const index = initialChartData.findIndex((arg) => arg.date === date);
+
+				if (index !== -1) {
+					initialChartData[index].input += data.output ? 0 : data.value;
+					initialChartData[index].output += data.output ? data.value : 0;
+				}
+			}
+
+			console.log(initialChartData);
+			setChartData(initialChartData);
 		}
-
-		const startDate = new Date(referenceDate);
-
-		startDate.setDate(startDate.getDate() - daysToSubtract);
-
-		return date >= startDate;
-	});
+	}, [compiledCashFlow.isLoading, compiledCashFlow.data]);
 
 	return (
 		<div className="w-full flex flex-1 flex-col gap-4 p-4 pt-0">
@@ -197,29 +153,30 @@ const Page: FC = () => {
 						config={chartConfig}
 						className="aspect-auto h-[250px] w-full"
 					>
-						<AreaChart data={filteredData}>
+						<AreaChart data={chartData}>
 							<defs>
-								<linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+								<linearGradient id="fillInput" x1="0" y1="0" x2="0" y2="1">
 									<stop
 										offset="5%"
-										stopColor="var(--color-desktop)"
+										stopColor="var(--color-input)"
 										stopOpacity={0.8}
 									/>
 									<stop
 										offset="95%"
-										stopColor="var(--color-desktop)"
+										stopColor="var(--color-input)"
 										stopOpacity={0.1}
 									/>
 								</linearGradient>
-								<linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+
+								<linearGradient id="fillOutput" x1="0" y1="0" x2="0" y2="1">
 									<stop
 										offset="5%"
-										stopColor="var(--color-mobile)"
+										stopColor="var(--color-output)"
 										stopOpacity={0.8}
 									/>
 									<stop
 										offset="95%"
-										stopColor="var(--color-mobile)"
+										stopColor="var(--color-output)"
 										stopOpacity={0.1}
 									/>
 								</linearGradient>
@@ -234,7 +191,7 @@ const Page: FC = () => {
 								tickMargin={8}
 								minTickGap={32}
 								tickFormatter={(value) => {
-									const date = new Date(value);
+									const date = parseDateWithoutTimezone(value);
 									return date.toLocaleDateString("en-US", {
 										month: "short",
 										day: "numeric",
@@ -247,7 +204,9 @@ const Page: FC = () => {
 								content={
 									<ChartTooltipContent
 										labelFormatter={(value) => {
-											return new Date(value).toLocaleDateString("en-US", {
+											const date = parseDateWithoutTimezone(value);
+
+											return date.toLocaleDateString("en-US", {
 												month: "short",
 												day: "numeric",
 											});
@@ -258,24 +217,42 @@ const Page: FC = () => {
 							/>
 
 							<Area
-								dataKey="mobile"
+								dataKey="output"
 								type="natural"
-								fill="url(#fillMobile)"
-								stroke="var(--color-mobile)"
+								fill="url(#fillOutput)"
+								stroke="var(--color-output)"
 								stackId="a"
 							/>
 
 							<Area
-								dataKey="desktop"
+								dataKey="input"
 								type="natural"
-								fill="url(#fillDesktop)"
-								stroke="var(--color-desktop)"
+								fill="url(#fillInput)"
+								stroke="var(--color-input)"
 								stackId="a"
 							/>
 
 							<ChartLegend content={<ChartLegendContent />} />
 						</AreaChart>
 					</ChartContainer>
+				</CardContent>
+			</Card>
+
+			<Card className="max-w-md">
+				<CardHeader>
+					<CardTitle className="text-lg md:text-xl">
+						Add Cash Flow Movement
+					</CardTitle>
+					<CardDescription className="text-xs md:text-sm">
+						Record a new movement in your cash flow.
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<FormCashFlowMovementComponent
+						fallback={() => {
+							compiledCashFlow.mutate();
+						}}
+					/>
 				</CardContent>
 			</Card>
 		</div>

@@ -24,7 +24,9 @@ export const AppBreadcrumb: FC = () => {
 				{firstPages.map((page) => (
 					<Fragment key={page.name}>
 						<BreadcrumbItem className="hidden md:block">
-							<BreadcrumbLink href={page.path}>{page.name}</BreadcrumbLink>
+							<BreadcrumbLink href={page.path} className="capitalize">
+								{page.name}
+							</BreadcrumbLink>
 						</BreadcrumbItem>
 
 						<BreadcrumbSeparator className="hidden md:block" />
@@ -33,7 +35,9 @@ export const AppBreadcrumb: FC = () => {
 
 				{lastPage && (
 					<BreadcrumbItem>
-						<BreadcrumbPage>{lastPage.name}</BreadcrumbPage>
+						<BreadcrumbPage className="capitalize">
+							{lastPage.name}
+						</BreadcrumbPage>
 					</BreadcrumbItem>
 				)}
 			</BreadcrumbList>

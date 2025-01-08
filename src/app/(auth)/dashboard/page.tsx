@@ -5,7 +5,7 @@ import { BREADCRUMB_PAGE_NAME } from "@/store/breadcrumb";
 import type { FC } from "react";
 
 const Page: FC = () => {
-	useBreadcrumbPage(BREADCRUMB_PAGE_NAME.DASHBOARD);
+	useBreadcrumbPage({ name: BREADCRUMB_PAGE_NAME.DASHBOARD });
 
 	return (
 		<div className="w-full flex flex-1 flex-col gap-4 p-4 pt-0">

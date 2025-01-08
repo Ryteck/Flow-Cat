@@ -14,8 +14,8 @@ import type { FC } from "react";
 
 const Page: FC = () => {
 	useBreadcrumbPage(
-		BREADCRUMB_PAGE_NAME.DASHBOARD,
-		BREADCRUMB_PAGE_NAME.EDIT_ORGANIZATION,
+		{ name: BREADCRUMB_PAGE_NAME.DASHBOARD },
+		{ name: BREADCRUMB_PAGE_NAME.EDIT_ORGANIZATION },
 	);
 
 	return (
