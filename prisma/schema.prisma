@@ -117,7 +117,7 @@ model Invitation {
 }
 
 model Project {
-  id             String        @id @default(uuid())
+  id             String        @id @default(ulid())
   name           String
   slug           String        @unique
   description    String
@@ -129,17 +129,22 @@ model Project {
   @@map("project")
 }
 
+enum CashFlowMovementType {
+  Input
+  Output
+}
+
 model CashFlowMovement {
-  id             String        @id @default(uuid())
+  id             String               @id @default(ulid())
   name           String
   description    String
   date           DateTime
   value          Float
-  output         Boolean
+  type           CashFlowMovementType
   userId         String
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization?        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("cash_flow_movement")
 }

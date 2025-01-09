@@ -1,12 +1,12 @@
 import { prismaClient } from "@/services/prisma";
-import type { CashFlowMovement } from "@prisma/client";
+import { type CashFlowMovement, CashFlowMovementType } from "@prisma/client";
 
 export interface StoreCashFlowMovementData {
 	name: string;
 	description: string;
 	date: Date;
 	value: number;
-	output: boolean;
+	type: CashFlowMovementType;
 	userId: string;
 	organizationId?: undefined | null | string;
 }
@@ -16,7 +16,7 @@ export const storeCashFlowMovement = ({
 	description,
 	date,
 	value,
-	output,
+	type,
 	userId,
 	organizationId,
 }: StoreCashFlowMovementData): Promise<CashFlowMovement> =>
@@ -26,7 +26,7 @@ export const storeCashFlowMovement = ({
 			description,
 			date,
 			value,
-			output,
+			type,
 			userId,
 			organizationId,
 		},
@@ -50,7 +50,7 @@ export async function getCompiledCashFlow(
 
 			if (breakPoint) {
 				const groupedData = await prismaClient.cashFlowMovement.groupBy({
-					by: ["output"],
+					by: ["type"],
 					where: {
 						AND: [
 							{ organizationId, date: { lt: breakPoint } },
@@ -66,11 +66,14 @@ export async function getCompiledCashFlow(
 				});
 
 				for (const {
-					output,
+					type,
 					_sum: { value },
 				} of groupedData) {
-					previousInput += output ? 0 : (value ?? 0);
-					previousOutput += output ? (value ?? 0) : 0;
+					previousInput +=
+						type === CashFlowMovementType.Input ? (value ?? 0) : 0;
+
+					previousOutput +=
+						type === CashFlowMovementType.Output ? (value ?? 0) : 0;
 				}
 			}
 

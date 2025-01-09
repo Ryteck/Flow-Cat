@@ -1,3 +1,4 @@
+import { CashFlowMovementType } from "@prisma/client";
 import { z } from "zod";
 
 const cashFlowMovementFormSchema = z.object({
@@ -9,7 +10,7 @@ const cashFlowMovementFormSchema = z.object({
 
 	value: z.coerce.number().positive(),
 
-	output: z.boolean(),
+	type: z.nativeEnum(CashFlowMovementType),
 
 	organizationId: z
 		.string()

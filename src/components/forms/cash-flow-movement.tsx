@@ -26,6 +26,7 @@ import cashFlowMovementFormSchema, {
 } from "@/schemas/forms/cash-flow-movement";
 import { authClient } from "@/services/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CashFlowMovementType } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2Icon } from "lucide-react";
 import { type FC, useEffect } from "react";
@@ -49,7 +50,7 @@ export const FormCashFlowMovementComponent: FC<Props> = ({ fallback }) => {
 			description: "",
 			date: new Date(),
 			value: 0,
-			output: false,
+			type: CashFlowMovementType.Input,
 			organizationId: null,
 		},
 	});
@@ -173,7 +174,7 @@ export const FormCashFlowMovementComponent: FC<Props> = ({ fallback }) => {
 
 				<FormField
 					control={form.control}
-					name="output"
+					name="type"
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
 							<div className="space-y-0.5">
@@ -184,8 +185,14 @@ export const FormCashFlowMovementComponent: FC<Props> = ({ fallback }) => {
 							</div>
 							<FormControl>
 								<Switch
-									checked={field.value}
-									onCheckedChange={field.onChange}
+									checked={field.value === CashFlowMovementType.Output}
+									onCheckedChange={(checked) => {
+										field.onChange(
+											checked
+												? CashFlowMovementType.Output
+												: CashFlowMovementType.Input,
+										);
+									}}
 								/>
 							</FormControl>
 						</FormItem>

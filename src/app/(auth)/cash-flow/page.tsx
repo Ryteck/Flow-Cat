@@ -29,6 +29,7 @@ import { convertToSimpleDate, parseDateWithoutTimezone } from "@/libs/date";
 import type { CompiledCashFlow } from "@/repositories/cash-flow-movement";
 import { authClient } from "@/services/better-auth/client";
 import { BREADCRUMB_PAGE_NAME } from "@/store/breadcrumb";
+import { CashFlowMovementType } from "@prisma/client";
 import ms from "ms";
 import { type FC, useEffect, useState } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
@@ -108,8 +109,11 @@ const Page: FC = () => {
 				const index = initialChartData.findIndex((arg) => arg.date === date);
 
 				if (index !== -1) {
-					initialChartData[index].input += data.output ? 0 : data.value;
-					initialChartData[index].output += data.output ? data.value : 0;
+					initialChartData[index].input +=
+						data.type === CashFlowMovementType.Input ? data.value : 0;
+
+					initialChartData[index].output +=
+						data.type === CashFlowMovementType.Output ? data.value : 0;
 				}
 			}
 

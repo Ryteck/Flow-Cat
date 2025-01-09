@@ -15,7 +15,7 @@ const createCashFlowMovementAction = createServerAction()
 			description: input.description,
 			date: input.date,
 			value: input.value,
-			output: input.output,
+			type: input.type,
 			userId: activeProfile.user.id,
 			organizationId: input.organizationId,
 		});
