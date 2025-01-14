@@ -1,6 +1,7 @@
 "use client";
 
 import { FormCashFlowMovementComponent } from "@/components/forms/cash-flow-movement";
+import { TableCashFlowMovementComponent } from "@/components/tables/cash-flow-movement";
 import {
 	Card,
 	CardContent,
@@ -70,6 +71,12 @@ function generateStartChartData(startDate: Date): ChartData {
 	return result;
 }
 
+const timeRangeLabel: Record<string, string> = {
+	"90d": "last 3 months",
+	"30d": "last 30 days",
+	"7d": "last 7 days",
+};
+
 const Page: FC = () => {
 	useBreadcrumbPage(
 		{ name: BREADCRUMB_PAGE_NAME.DASHBOARD },
@@ -83,7 +90,10 @@ const Page: FC = () => {
 		? `organizationId=${organizationId}&`
 		: "";
 
-	const [timeRange, setTimeRange] = useState<string>("90d");
+	const [timeRange, setTimeRange] = useState<string>(
+		Object.keys(timeRangeLabel)[0],
+	);
+
 	const breakPoint = new Date(new Date().getTime() - ms(timeRange));
 
 	breakPoint.setHours(0);
@@ -124,31 +134,40 @@ const Page: FC = () => {
 
 	return (
 		<div className="w-full flex flex-1 flex-col gap-4 p-4 pt-0">
+			<FormCashFlowMovementComponent
+				fallback={() => {
+					compiledCashFlow.mutate();
+				}}
+			/>
+
 			<Card>
 				<CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
 					<div className="grid flex-1 gap-1 text-center sm:text-left">
-						<CardTitle>Area Chart - Interactive</CardTitle>
+						<CardTitle>
+							Cash Flow Movements - Area Chart - Interactive
+						</CardTitle>
 						<CardDescription>
-							Showing total visitors for the last 3 months
+							Showing all movements from the {timeRangeLabel[timeRange]}
 						</CardDescription>
 					</div>
 					<Select value={timeRange} onValueChange={setTimeRange}>
 						<SelectTrigger
-							className="w-[160px] rounded-lg sm:ml-auto"
+							className="w-[160px] rounded-lg sm:ml-auto capitalize"
 							aria-label="Select a value"
 						>
-							<SelectValue placeholder="Last 3 months" />
+							<SelectValue placeholder="Select a value" />
 						</SelectTrigger>
+
 						<SelectContent className="rounded-xl">
-							<SelectItem value="90d" className="rounded-lg">
-								Last 3 months
-							</SelectItem>
-							<SelectItem value="30d" className="rounded-lg">
-								Last 30 days
-							</SelectItem>
-							<SelectItem value="7d" className="rounded-lg">
-								Last 7 days
-							</SelectItem>
+							{Object.entries(timeRangeLabel).map(([key, value]) => (
+								<SelectItem
+									key={key}
+									value={key}
+									className="rounded-lg capitalize"
+								>
+									{value}
+								</SelectItem>
+							))}
 						</SelectContent>
 					</Select>
 				</CardHeader>
@@ -242,23 +261,9 @@ const Page: FC = () => {
 				</CardContent>
 			</Card>
 
-			<Card className="max-w-md">
-				<CardHeader>
-					<CardTitle className="text-lg md:text-xl">
-						Add Cash Flow Movement
-					</CardTitle>
-					<CardDescription className="text-xs md:text-sm">
-						Record a new movement in your cash flow.
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<FormCashFlowMovementComponent
-						fallback={() => {
-							compiledCashFlow.mutate();
-						}}
-					/>
-				</CardContent>
-			</Card>
+			<TableCashFlowMovementComponent
+				cashFlowMovements={compiledCashFlow.data?.movements ?? []}
+			/>
 		</div>
 	);
 };

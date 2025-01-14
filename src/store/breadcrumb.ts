@@ -2,21 +2,15 @@ import { create } from "zustand";
 
 export enum BREADCRUMB_PAGE_NAME {
 	DASHBOARD = "dashboard",
-	CREATE_ORGANIZATION = "create organization",
-	EDIT_ORGANIZATION = "edit organization",
 	EDIT_ACCOUNT = "account",
 	PROJECTS = "projects",
-	CREATE_PROJECT = "create project",
 	CASH_FLOW = "cash flow",
 }
 
 const breadcrumbPagePaths: Record<BREADCRUMB_PAGE_NAME, string> = {
 	[BREADCRUMB_PAGE_NAME.DASHBOARD]: "/dashboard",
-	[BREADCRUMB_PAGE_NAME.CREATE_ORGANIZATION]: "/create-organization",
-	[BREADCRUMB_PAGE_NAME.EDIT_ORGANIZATION]: "/edit-organization",
 	[BREADCRUMB_PAGE_NAME.EDIT_ACCOUNT]: "/account",
 	[BREADCRUMB_PAGE_NAME.PROJECTS]: "/projects",
-	[BREADCRUMB_PAGE_NAME.CREATE_PROJECT]: "/create-project",
 	[BREADCRUMB_PAGE_NAME.CASH_FLOW]: "/cash-flow",
 };
 

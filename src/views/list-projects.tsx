@@ -1,5 +1,6 @@
 "use client";
 
+import { FormProjectComponent } from "@/components/forms/project";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -13,7 +14,6 @@ import { useBreadcrumbPage } from "@/hooks/breadcrumb-page";
 import { authClient } from "@/services/better-auth/client";
 import { BREADCRUMB_PAGE_NAME } from "@/store/breadcrumb";
 import type { Project } from "@prisma/client";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { FC } from "react";
 
@@ -36,11 +36,7 @@ export const ListProjectsView: FC<Props> = ({ projects }) => {
 
 	return (
 		<div className="w-full flex flex-1 flex-col gap-4 p-4 pt-0">
-			<Button className="w-fit" asChild>
-				<Link href="/create-project" passHref>
-					Create a project
-				</Link>
-			</Button>
+			<FormProjectComponent />
 
 			<div className="flex flex-wrap gap-4">
 				{projects

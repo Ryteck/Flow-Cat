@@ -28,17 +28,28 @@ import { authClient } from "@/services/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CashFlowMovementType } from "@prisma/client";
 import { format } from "date-fns";
-import { CalendarIcon, Loader2Icon } from "lucide-react";
-import { type FC, useEffect } from "react";
+import { CalendarIcon } from "lucide-react";
+import { type FC, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useServerAction } from "zsa-react";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "../ui/dialog";
 
 interface Props {
 	fallback?: () => void;
 }
 
 export const FormCashFlowMovementComponent: FC<Props> = ({ fallback }) => {
+	const [openDialog, setOpenDialog] = useState(false);
+
 	const activeOrganization = authClient.useActiveOrganization();
 
 	const createCashFlowMovement = useServerAction(createCashFlowMovementAction);
@@ -59,6 +70,7 @@ export const FormCashFlowMovementComponent: FC<Props> = ({ fallback }) => {
 		const [, error] = await createCashFlowMovement.execute(input);
 		if (error) return toast.error(error.message);
 		form.reset();
+		setOpenDialog(false);
 		if (fallback) fallback();
 	});
 
@@ -68,151 +80,167 @@ export const FormCashFlowMovementComponent: FC<Props> = ({ fallback }) => {
 	}, [activeOrganization.isPending, activeOrganization.data]);
 
 	return (
-		<Form {...form}>
-			<form onSubmit={onSubmit} className="grid gap-4">
-				<FormField
-					control={form.control}
-					name="name"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Name</FormLabel>
-							<FormControl>
-								<Input
-									placeholder="Continuous Improvement Initiative"
-									autoComplete="project-name"
-									{...field}
-								/>
-							</FormControl>
+		<Dialog open={openDialog} onOpenChange={setOpenDialog}>
+			<DialogTrigger asChild>
+				<Button className="w-fit">Create a movement</Button>
+			</DialogTrigger>
 
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Add Cash Flow Movement</DialogTitle>
+					<DialogDescription>
+						Record a new movement in your cash flow.
+					</DialogDescription>
+				</DialogHeader>
 
-				<FormField
-					control={form.control}
-					name="description"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Description</FormLabel>
-							<FormControl>
-								<Textarea
-									placeholder="This project aims to improve internal processes and enhance team efficiency."
-									autoComplete="project-description"
-									onKeyDown={(e) => {
-										if (!e.shiftKey && e.key === "Enter") {
-											e.preventDefault();
-											onSubmit();
-										}
-									}}
-									{...field}
-								/>
-							</FormControl>
-
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name="date"
-					render={({ field }) => (
-						<FormItem className="flex flex-col">
-							<FormLabel>Date</FormLabel>
-							<Popover>
-								<PopoverTrigger asChild>
+				<Form {...form}>
+					<form
+						id="cash-flow-movement-form"
+						onSubmit={onSubmit}
+						className="grid gap-4"
+					>
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Name</FormLabel>
 									<FormControl>
-										<Button
-											variant={"outline"}
-											className={cn(
-												"pl-3 text-left font-normal",
-												!field.value && "text-muted-foreground",
-											)}
-										>
-											{field.value ? (
-												format(field.value, "PPP")
-											) : (
-												<span>Pick a date</span>
-											)}
-											<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-										</Button>
+										<Input
+											placeholder="Continuous Improvement Initiative"
+											autoComplete="movement-name"
+											{...field}
+										/>
 									</FormControl>
-								</PopoverTrigger>
-								<PopoverContent className="w-auto p-0" align="start">
-									<Calendar
-										mode="single"
-										selected={field.value}
-										onSelect={field.onChange}
-									/>
-								</PopoverContent>
-							</Popover>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
 
-				<FormField
-					control={form.control}
-					name="value"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Value</FormLabel>
-							<FormControl>
-								<Input
-									type="number"
-									placeholder="Continuous Improvement Initiative"
-									autoComplete="project-name"
-									{...field}
-								/>
-							</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+						<FormField
+							control={form.control}
+							name="description"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Description</FormLabel>
+									<FormControl>
+										<Textarea
+											placeholder="This project aims to improve internal processes and enhance team efficiency."
+											autoComplete="movement-description"
+											onKeyDown={(e) => {
+												if (!e.shiftKey && e.key === "Enter") {
+													e.preventDefault();
+													onSubmit();
+												}
+											}}
+											{...field}
+										/>
+									</FormControl>
 
-				<FormField
-					control={form.control}
-					name="type"
-					render={({ field }) => (
-						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-							<div className="space-y-0.5">
-								<FormLabel>Marketing emails</FormLabel>
-								<FormDescription>
-									Receive emails about new products, features, and more.
-								</FormDescription>
-							</div>
-							<FormControl>
-								<Switch
-									checked={field.value === CashFlowMovementType.Output}
-									onCheckedChange={(checked) => {
-										field.onChange(
-											checked
-												? CashFlowMovementType.Output
-												: CashFlowMovementType.Input,
-										);
-									}}
-								/>
-							</FormControl>
-						</FormItem>
-					)}
-				/>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-				<div className="flex gap-2">
+						<FormField
+							control={form.control}
+							name="date"
+							render={({ field }) => (
+								<FormItem className="flex flex-col">
+									<FormLabel>Date</FormLabel>
+									<Popover>
+										<PopoverTrigger asChild>
+											<FormControl>
+												<Button
+													variant={"outline"}
+													className={cn(
+														"pl-3 text-left font-normal",
+														!field.value && "text-muted-foreground",
+													)}
+												>
+													{field.value ? (
+														format(field.value, "PPP")
+													) : (
+														<span>Pick a date</span>
+													)}
+													<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+												</Button>
+											</FormControl>
+										</PopoverTrigger>
+										<PopoverContent className="w-auto p-0" align="start">
+											<Calendar
+												mode="single"
+												selected={field.value}
+												onSelect={field.onChange}
+											/>
+										</PopoverContent>
+									</Popover>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="value"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Value</FormLabel>
+									<FormControl>
+										<Input
+											type="number"
+											placeholder="Continuous Improvement Initiative"
+											autoComplete="movement-value"
+											{...field}
+										/>
+									</FormControl>
+
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="type"
+							render={({ field }) => (
+								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+									<div className="space-y-0.5">
+										<FormLabel>Output Movement</FormLabel>
+										<FormDescription>
+											Check this option if the movement is an output (expense).
+											If unchecked, it will be considered an input (income).
+										</FormDescription>
+									</div>
+									<FormControl>
+										<Switch
+											checked={field.value === CashFlowMovementType.Output}
+											onCheckedChange={(checked) => {
+												field.onChange(
+													checked
+														? CashFlowMovementType.Output
+														: CashFlowMovementType.Input,
+												);
+											}}
+										/>
+									</FormControl>
+								</FormItem>
+							)}
+						/>
+					</form>
+				</Form>
+
+				<DialogFooter className="gap-2">
 					<Button
+						form="cash-flow-movement-form"
 						type="submit"
-						className="w-full"
 						disabled={form.formState.isSubmitting}
 					>
-						{form.formState.isSubmitting ? (
-							<Loader2Icon size={16} className="animate-spin" />
-						) : (
-							"Create a movement"
-						)}
+						Create a movement
 					</Button>
-				</div>
-			</form>
-		</Form>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 };

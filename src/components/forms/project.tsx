@@ -3,6 +3,15 @@
 import createProjectAction from "@/actions/create-project";
 import { Button } from "@/components/ui/button";
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import {
 	Form,
 	FormControl,
 	FormField,
@@ -52,56 +61,71 @@ export const FormProjectComponent: FC = () => {
 	}, [activeOrganization.isPending, activeOrganization.data]);
 
 	return (
-		<Form {...form}>
-			<form onSubmit={onSubmit} className="grid gap-4">
-				<FormField
-					control={form.control}
-					name="name"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Name</FormLabel>
-							<FormControl>
-								<Input
-									placeholder="Continuous Improvement Initiative"
-									autoComplete="project-name"
-									{...field}
-								/>
-							</FormControl>
+		<Dialog>
+			<DialogTrigger asChild>
+				<Button className="w-fit">Create a project</Button>
+			</DialogTrigger>
 
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Create Project</DialogTitle>
+					<DialogDescription>
+						Enter the details to create a new project.
+					</DialogDescription>
+				</DialogHeader>
 
-				<FormField
-					control={form.control}
-					name="description"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Description</FormLabel>
-							<FormControl>
-								<Textarea
-									placeholder="This project aims to improve internal processes and enhance team efficiency."
-									autoComplete="project-description"
-									onKeyDown={(e) => {
-										if (!e.shiftKey && e.key === "Enter") {
-											e.preventDefault();
-											onSubmit();
-										}
-									}}
-									{...field}
-								/>
-							</FormControl>
+				<Form {...form}>
+					<form id="project-form" onSubmit={onSubmit} className="grid gap-4">
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Name</FormLabel>
+									<FormControl>
+										<Input
+											placeholder="Continuous Improvement Initiative"
+											autoComplete="project-name"
+											{...field}
+										/>
+									</FormControl>
 
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-				<div className="flex gap-2">
+						<FormField
+							control={form.control}
+							name="description"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Description</FormLabel>
+									<FormControl>
+										<Textarea
+											placeholder="This project aims to improve internal processes and enhance team efficiency."
+											autoComplete="project-description"
+											onKeyDown={(e) => {
+												if (!e.shiftKey && e.key === "Enter") {
+													e.preventDefault();
+													onSubmit();
+												}
+											}}
+											{...field}
+										/>
+									</FormControl>
+
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</form>
+				</Form>
+
+				<DialogFooter className="gap-2">
 					<Button
+						form="project-form"
 						type="submit"
-						className="w-full"
 						disabled={form.formState.isSubmitting}
 					>
 						{form.formState.isSubmitting ? (
@@ -110,8 +134,8 @@ export const FormProjectComponent: FC = () => {
 							"Create a project"
 						)}
 					</Button>
-				</div>
-			</form>
-		</Form>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 };

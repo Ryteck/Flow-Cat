@@ -8,14 +8,10 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/services/better-auth/client";
-import {
-	ArrowDownUpIcon,
-	LayersIcon,
-	LayoutDashboardIcon,
-	PencilIcon,
-} from "lucide-react";
+import { ArrowDownUpIcon, LayersIcon, LayoutDashboardIcon } from "lucide-react";
 import Link from "next/link";
 import type { FC } from "react";
+import { FormOrganizationComponent } from "../forms/organization";
 
 export const SidebarNavPlatformComponent: FC = () => {
 	const activeOrganization = authClient.useActiveOrganization();
@@ -55,12 +51,7 @@ export const SidebarNavPlatformComponent: FC = () => {
 
 				{activeOrganization.data !== null && (
 					<SidebarMenuItem>
-						<SidebarMenuButton asChild>
-							<Link href="/edit-organization">
-								<PencilIcon />
-								<span>Edit Organization</span>
-							</Link>
-						</SidebarMenuButton>
+						<FormOrganizationComponent editMode />
 					</SidebarMenuItem>
 				)}
 			</SidebarMenu>

@@ -8,7 +8,7 @@ const cashFlowMovementFormSchema = z.object({
 
 	date: z.date(),
 
-	value: z.coerce.number().positive(),
+	value: z.coerce.number().positive("Value must be positive"),
 
 	type: z.nativeEnum(CashFlowMovementType),
 

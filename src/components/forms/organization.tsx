@@ -2,6 +2,16 @@
 
 import { Button } from "@/components/ui/button";
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {
 	Form,
 	FormControl,
 	FormField,
@@ -13,12 +23,13 @@ import { Input } from "@/components/ui/input";
 import { generateSlugWithTimestamp } from "@/libs/utils";
 import { authClient } from "@/services/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2Icon } from "lucide-react";
-import { redirect, useRouter } from "next/navigation";
-import { type FC, useEffect } from "react";
+import { Loader2Icon, PencilIcon, PlusIcon } from "lucide-react";
+import { redirect } from "next/navigation";
+import { type FC, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { SidebarMenuButton } from "../ui/sidebar";
 
 const formSchema = z.object({
 	name: z.string().min(1, "Name is required"),
@@ -28,10 +39,14 @@ type FormSchema = z.infer<typeof formSchema>;
 
 interface Props {
 	editMode?: boolean;
+	fallback?: () => void;
 }
 
-export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
-	const router = useRouter();
+export const FormOrganizationComponent: FC<Props> = ({
+	editMode,
+	fallback,
+}) => {
+	const [openDialog, setOpenDialog] = useState(false);
 
 	const activeOrganization = authClient.useActiveOrganization();
 
@@ -70,11 +85,19 @@ export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
 					onError: (ctx) => {
 						toast.error(ctx.error.message);
 					},
-					onSuccess: () => {
-						router.push("/dashboard");
+					onSuccess: async () => {
+						await authClient.organization.setActive({
+							organizationSlug: slug,
+						});
+
+						toast.success("Organization Created");
+
+						setOpenDialog(false);
 					},
 				},
 			});
+
+		if (fallback) fallback();
 	});
 
 	useEffect(() => {
@@ -90,32 +113,74 @@ export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
 		return redirect("/dashboard");
 
 	return (
-		<Form {...form}>
-			<form onSubmit={onSubmit} className="grid gap-4">
-				<FormField
-					control={form.control}
-					name="name"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Name</FormLabel>
-							<FormControl>
-								<Input
-									placeholder="Acme Inc"
-									autoComplete="organization-name"
-									{...field}
-								/>
-							</FormControl>
+		<Dialog open={openDialog} onOpenChange={setOpenDialog}>
+			<DialogTrigger asChild>
+				{editMode ? (
+					<SidebarMenuButton>
+						<PencilIcon />
+						<span>Edit Organization</span>
+					</SidebarMenuButton>
+				) : (
+					<DropdownMenuItem
+						className="gap-2 p-2"
+						onClick={(e) => {
+							e.preventDefault();
+							setOpenDialog(true);
+						}}
+					>
+						<div className="flex size-6 items-center justify-center rounded-md border bg-background">
+							<PlusIcon className="size-4" />
+						</div>
+						<div className="font-medium text-muted-foreground">
+							Create Organization
+						</div>
+					</DropdownMenuItem>
+				)}
+			</DialogTrigger>
 
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>
+						{editMode ? "Edit Organization" : "Create Organization"}
+					</DialogTitle>
+					<DialogDescription>
+						{editMode
+							? "Modify the details of an existing organization."
+							: "Enter the details to create a new organization."}
+					</DialogDescription>
+				</DialogHeader>
 
-				<div className="flex gap-2">
+				<Form {...form}>
+					<form
+						id="organization-form"
+						onSubmit={onSubmit}
+						className="grid gap-4"
+					>
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Name</FormLabel>
+									<FormControl>
+										<Input
+											placeholder="Acme Inc"
+											autoComplete="organization-name"
+											{...field}
+										/>
+									</FormControl>
+
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</form>
+				</Form>
+
+				<DialogFooter className="gap-2">
 					{editMode && (
 						<Button
 							type="button"
-							className="w-full"
 							disabled={form.formState.isSubmitting}
 							variant="destructive"
 							onClick={() =>
@@ -141,9 +206,12 @@ export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
 					)}
 
 					<Button
+						form="organization-form"
 						type="submit"
-						className="w-full"
-						disabled={form.formState.isSubmitting}
+						disabled={
+							form.formState.isSubmitting ||
+							activeOrganization.data?.name === form.watch("name")
+						}
 					>
 						{form.formState.isSubmitting ? (
 							<Loader2Icon size={16} className="animate-spin" />
@@ -153,8 +221,8 @@ export const FormOrganizationComponent: FC<Props> = ({ editMode }) => {
 							"Create an organization"
 						)}
 					</Button>
-				</div>
-			</form>
-		</Form>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 };

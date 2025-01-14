@@ -19,24 +19,26 @@ import { authClient } from "@/services/better-auth/client";
 import {
 	ChevronsUpDown,
 	GalleryVerticalEndIcon,
-	Plus,
 	SignatureIcon,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import type { FC } from "react";
+import { type FC, useState } from "react";
+import { FormOrganizationComponent } from "../forms/organization";
 
 export const SidebarOrganizationSwitcherComponent: FC = () => {
-	const router = useRouter();
-
 	const authOrganizations = authClient.useListOrganizations();
 	const activeOrganization = authClient.useActiveOrganization();
+
+	const [openDropdownMenu, setOpenDropdownMenu] = useState(false);
 
 	const { isMobile } = useSidebar();
 
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
-				<DropdownMenu>
+				<DropdownMenu
+					open={openDropdownMenu}
+					onOpenChange={setOpenDropdownMenu}
+				>
 					<DropdownMenuTrigger asChild>
 						<SidebarMenuButton
 							size="lg"
@@ -108,19 +110,9 @@ export const SidebarOrganizationSwitcherComponent: FC = () => {
 
 						<DropdownMenuSeparator />
 
-						<DropdownMenuItem
-							className="gap-2 p-2"
-							onClick={() => {
-								router.push("/create-organization");
-							}}
-						>
-							<div className="flex size-6 items-center justify-center rounded-md border bg-background">
-								<Plus className="size-4" />
-							</div>
-							<div className="font-medium text-muted-foreground">
-								Create Organization
-							</div>
-						</DropdownMenuItem>
+						<FormOrganizationComponent
+							fallback={() => setOpenDropdownMenu(false)}
+						/>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</SidebarMenuItem>
