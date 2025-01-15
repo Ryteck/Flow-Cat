@@ -127,7 +127,6 @@ const Page: FC = () => {
 				}
 			}
 
-			console.log(initialChartData);
 			setChartData(initialChartData);
 		}
 	}, [compiledCashFlow.isLoading, compiledCashFlow.data]);
