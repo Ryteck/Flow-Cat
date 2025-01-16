@@ -1,16 +1,17 @@
 "use server";
 
 import { getActiveProfile } from "@/functions/get-active-profile";
-import { storeCashFlowMovement } from "@/repositories/cash-flow-movement";
+import { upsertCashFlowMovement } from "@/repositories/cash-flow-movement";
 import cashFlowMovementFormSchema from "@/schemas/forms/cash-flow-movement";
 import { createServerAction } from "zsa";
 
-const createCashFlowMovementAction = createServerAction()
+const upsertCashFlowMovementAction = createServerAction()
 	.input(cashFlowMovementFormSchema)
 	.handler(async ({ input }) => {
 		const activeProfile = await getActiveProfile();
 
-		return storeCashFlowMovement({
+		return upsertCashFlowMovement({
+			id: input.id,
 			name: input.name,
 			description: input.description,
 			date: input.date,
@@ -21,4 +22,4 @@ const createCashFlowMovementAction = createServerAction()
 		});
 	});
 
-export default createCashFlowMovementAction;
+export default upsertCashFlowMovementAction;

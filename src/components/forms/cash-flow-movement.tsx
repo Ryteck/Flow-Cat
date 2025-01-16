@@ -1,6 +1,7 @@
 "use client";
 
-import createCashFlowMovementAction from "@/actions/create-cash-flow-movement";
+import destroyCashFlowMovementAction from "@/actions/destroy-cash-flow-movement";
+import upsertCashFlowMovementAction from "@/actions/upsert-cash-flow-movement";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -26,10 +27,10 @@ import cashFlowMovementFormSchema, {
 } from "@/schemas/forms/cash-flow-movement";
 import { authClient } from "@/services/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CashFlowMovementType } from "@prisma/client";
+import { type CashFlowMovement, CashFlowMovementType } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { type FC, useEffect, useState } from "react";
+import { type FC, type PropsWithChildren, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useServerAction } from "zsa-react";
@@ -44,34 +45,53 @@ import {
 } from "../ui/dialog";
 
 interface Props {
-	fallback?: () => void;
+	fallback: () => void;
+	cashFlowMovement?: CashFlowMovement;
 }
 
-export const FormCashFlowMovementComponent: FC<Props> = ({ fallback }) => {
+export const FormCashFlowMovementComponent: FC<PropsWithChildren<Props>> = ({
+	children,
+	fallback,
+	cashFlowMovement,
+}) => {
 	const [openDialog, setOpenDialog] = useState(false);
 
 	const activeOrganization = authClient.useActiveOrganization();
 
-	const createCashFlowMovement = useServerAction(createCashFlowMovementAction);
+	const upsertCashFlowMovement = useServerAction(upsertCashFlowMovementAction);
+	const destroyCashFlowMovement = useServerAction(
+		destroyCashFlowMovementAction,
+	);
 
 	const form = useForm<CashFlowMovementFormSchema>({
 		resolver: zodResolver(cashFlowMovementFormSchema),
-		defaultValues: {
-			name: "",
-			description: "",
-			date: new Date(),
-			value: 0,
-			type: CashFlowMovementType.Input,
-			organizationId: null,
-		},
+		defaultValues: cashFlowMovement
+			? {
+					id: cashFlowMovement.id,
+					name: cashFlowMovement.name,
+					description: cashFlowMovement.description,
+					date: new Date(cashFlowMovement.date),
+					value: cashFlowMovement.value,
+					type: cashFlowMovement.type,
+					organizationId: cashFlowMovement.organizationId,
+				}
+			: {
+					id: undefined,
+					name: "",
+					description: "",
+					date: new Date(),
+					value: 0,
+					type: CashFlowMovementType.Input,
+					organizationId: null,
+				},
 	});
 
 	const onSubmit = form.handleSubmit(async (input) => {
-		const [, error] = await createCashFlowMovement.execute(input);
+		const [, error] = await upsertCashFlowMovement.execute(input);
 		if (error) return toast.error(error.message);
 		form.reset();
 		setOpenDialog(false);
-		if (fallback) fallback();
+		fallback();
 	});
 
 	useEffect(() => {
@@ -82,14 +102,24 @@ export const FormCashFlowMovementComponent: FC<Props> = ({ fallback }) => {
 	return (
 		<Dialog open={openDialog} onOpenChange={setOpenDialog}>
 			<DialogTrigger asChild>
-				<Button className="w-fit">Create a movement</Button>
+				{children ? (
+					children
+				) : (
+					<Button className="w-fit">Create a movement</Button>
+				)}
 			</DialogTrigger>
 
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Add Cash Flow Movement</DialogTitle>
+					<DialogTitle>
+						{cashFlowMovement
+							? "Edit Cash Flow Movement"
+							: "Add Cash Flow Movement"}
+					</DialogTitle>
 					<DialogDescription>
-						Record a new movement in your cash flow.
+						{cashFlowMovement
+							? "Update details of an existing movement in your cash flow."
+							: "Record a new movement in your cash flow."}
 					</DialogDescription>
 				</DialogHeader>
 
@@ -232,12 +262,31 @@ export const FormCashFlowMovementComponent: FC<Props> = ({ fallback }) => {
 				</Form>
 
 				<DialogFooter className="gap-2">
+					{cashFlowMovement && (
+						<Button
+							type="button"
+							disabled={form.formState.isSubmitting}
+							variant="destructive"
+							onClick={async () => {
+								const [, error] = await destroyCashFlowMovement.execute(
+									cashFlowMovement.id,
+								);
+
+								if (error) return toast.error(error.message);
+
+								fallback();
+							}}
+						>
+							Delete movement
+						</Button>
+					)}
+
 					<Button
 						form="cash-flow-movement-form"
 						type="submit"
 						disabled={form.formState.isSubmitting}
 					>
-						Create a movement
+						{cashFlowMovement ? "Save changes" : "Create a movement"}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

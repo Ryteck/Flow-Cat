@@ -1,7 +1,8 @@
 import { prismaClient } from "@/services/prisma";
 import { type CashFlowMovement, CashFlowMovementType } from "@prisma/client";
 
-export interface StoreCashFlowMovementData {
+export interface UpsertCashFlowMovementData {
+	id?: string;
 	name: string;
 	description: string;
 	date: Date;
@@ -11,7 +12,8 @@ export interface StoreCashFlowMovementData {
 	organizationId?: undefined | null | string;
 }
 
-export const storeCashFlowMovement = ({
+export const upsertCashFlowMovement = ({
+	id,
 	name,
 	description,
 	date,
@@ -19,9 +21,19 @@ export const storeCashFlowMovement = ({
 	type,
 	userId,
 	organizationId,
-}: StoreCashFlowMovementData): Promise<CashFlowMovement> =>
-	prismaClient.cashFlowMovement.create({
-		data: {
+}: UpsertCashFlowMovementData): Promise<CashFlowMovement> =>
+	prismaClient.cashFlowMovement.upsert({
+		where: { id },
+		create: {
+			name,
+			description,
+			date,
+			value,
+			type,
+			userId,
+			organizationId,
+		},
+		update: {
 			name,
 			description,
 			date,
@@ -91,9 +103,16 @@ export async function getCompiledCashFlow(
 					},
 				],
 			},
-			orderBy: { date: "asc" },
+			orderBy: { date: "desc" },
 		}),
 	]);
 
 	return { previousInput, previousOutput, movements };
 }
+
+export const destroyCashFlowMovement = (
+	id: string,
+): Promise<CashFlowMovement> =>
+	prismaClient.cashFlowMovement.delete({
+		where: { id },
+	});

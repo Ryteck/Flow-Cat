@@ -262,6 +262,9 @@ const Page: FC = () => {
 
 			<TableCashFlowMovementComponent
 				cashFlowMovements={compiledCashFlow.data?.movements ?? []}
+				fallbackTableRow={() => {
+					compiledCashFlow.mutate();
+				}}
 			/>
 		</div>
 	);

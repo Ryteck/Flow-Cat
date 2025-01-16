@@ -17,6 +17,7 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import type { FC } from "react";
+import { FormCashFlowMovementComponent } from "../forms/cash-flow-movement";
 
 const tableColumns: ColumnDef<CashFlowMovement>[] = [
 	{
@@ -61,10 +62,12 @@ const tableColumns: ColumnDef<CashFlowMovement>[] = [
 
 interface Props {
 	cashFlowMovements: CashFlowMovement[];
+	fallbackTableRow: () => void;
 }
 
 export const TableCashFlowMovementComponent: FC<Props> = ({
 	cashFlowMovements,
+	fallbackTableRow,
 }) => {
 	const table = useReactTable({
 		getCoreRowModel: getCoreRowModel(),
@@ -78,31 +81,38 @@ export const TableCashFlowMovementComponent: FC<Props> = ({
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map((header) => {
-								return (
-									<TableHead key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext(),
-												)}
-									</TableHead>
-								);
-							})}
+							{headerGroup.headers.map((header) => (
+								<TableHead key={header.id}>
+									{header.isPlaceholder
+										? null
+										: flexRender(
+												header.column.columnDef.header,
+												header.getContext(),
+											)}
+								</TableHead>
+							))}
 						</TableRow>
 					))}
 				</TableHeader>
 				<TableBody>
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map((row) => (
-							<TableRow key={row.id}>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id}>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</TableCell>
-								))}
-							</TableRow>
+							<FormCashFlowMovementComponent
+								key={row.id}
+								fallback={fallbackTableRow}
+								cashFlowMovement={row.original}
+							>
+								<TableRow className="cursor-pointer">
+									{row.getVisibleCells().map((cell) => (
+										<TableCell key={cell.id}>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</TableCell>
+									))}
+								</TableRow>
+							</FormCashFlowMovementComponent>
 						))
 					) : (
 						<TableRow>
