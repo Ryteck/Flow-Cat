@@ -1,6 +1,8 @@
 import { prismaClient } from "@/services/prisma";
 import { type CashFlowMovement, CashFlowMovementType } from "@prisma/client";
 
+const NIL_ULID = "00000000000000000000000000";
+
 export interface UpsertCashFlowMovementData {
 	id?: string;
 	name: string;
@@ -13,7 +15,7 @@ export interface UpsertCashFlowMovementData {
 }
 
 export const upsertCashFlowMovement = ({
-	id,
+	id = NIL_ULID,
 	name,
 	description,
 	date,

@@ -1,11 +1,9 @@
 "use server";
 
+import { actionClient } from "@/libs/safe-action";
 import { destroyCashFlowMovement } from "@/repositories/cash-flow-movement";
 import { z } from "zod";
-import { createServerAction } from "zsa";
 
-const destroyCashFlowMovementAction = createServerAction()
-	.input(z.string().ulid())
-	.handler(({ input }) => destroyCashFlowMovement(input));
-
-export default destroyCashFlowMovementAction;
+export const destroyCashFlowMovementAction = actionClient
+	.schema(z.string().ulid())
+	.action(async ({ parsedInput }) => destroyCashFlowMovement(parsedInput));

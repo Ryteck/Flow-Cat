@@ -1,7 +1,7 @@
 "use client";
 
-import destroyCashFlowMovementAction from "@/actions/destroy-cash-flow-movement";
-import upsertCashFlowMovementAction from "@/actions/upsert-cash-flow-movement";
+import { destroyCashFlowMovementAction } from "@/actions/destroy-cash-flow-movement";
+import { upsertCashFlowMovementAction } from "@/actions/upsert-cash-flow-movement";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -33,7 +33,6 @@ import { CalendarIcon } from "lucide-react";
 import { type FC, type PropsWithChildren, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useServerAction } from "zsa-react";
 import {
 	Dialog,
 	DialogContent,
@@ -57,11 +56,6 @@ export const FormCashFlowMovementComponent: FC<PropsWithChildren<Props>> = ({
 	const [openDialog, setOpenDialog] = useState(false);
 
 	const activeOrganization = authClient.useActiveOrganization();
-
-	const upsertCashFlowMovement = useServerAction(upsertCashFlowMovementAction);
-	const destroyCashFlowMovement = useServerAction(
-		destroyCashFlowMovementAction,
-	);
 
 	const form = useForm<CashFlowMovementFormSchema>({
 		resolver: zodResolver(cashFlowMovementFormSchema),
@@ -87,8 +81,10 @@ export const FormCashFlowMovementComponent: FC<PropsWithChildren<Props>> = ({
 	});
 
 	const onSubmit = form.handleSubmit(async (input) => {
-		const [, error] = await upsertCashFlowMovement.execute(input);
-		if (error) return toast.error(error.message);
+		const response = await upsertCashFlowMovementAction(input);
+
+		if (response?.serverError) return toast.error(response.serverError);
+
 		form.reset();
 		setOpenDialog(false);
 		fallback();
@@ -268,11 +264,12 @@ export const FormCashFlowMovementComponent: FC<PropsWithChildren<Props>> = ({
 							disabled={form.formState.isSubmitting}
 							variant="destructive"
 							onClick={async () => {
-								const [, error] = await destroyCashFlowMovement.execute(
+								const response = await destroyCashFlowMovementAction(
 									cashFlowMovement.id,
 								);
 
-								if (error) return toast.error(error.message);
+								if (response?.serverError)
+									return toast.error(response?.serverError);
 
 								fallback();
 							}}

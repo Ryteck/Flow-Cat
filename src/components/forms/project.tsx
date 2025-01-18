@@ -1,6 +1,6 @@
 "use client";
 
-import createProjectAction from "@/actions/create-project";
+import { createProjectAction } from "@/actions/create-project";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -30,13 +30,10 @@ import { useRouter } from "next/navigation";
 import { type FC, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useServerAction } from "zsa-react";
 
 export const FormProjectComponent: FC = () => {
 	const activeOrganization = authClient.useActiveOrganization();
 	const router = useRouter();
-
-	const createProject = useServerAction(createProjectAction);
 
 	const form = useForm<ProjectFormSchema>({
 		resolver: zodResolver(projectFormSchema),
@@ -48,11 +45,11 @@ export const FormProjectComponent: FC = () => {
 	});
 
 	const onSubmit = form.handleSubmit(async (input) => {
-		const [createdProject, error] = await createProject.execute(input);
+		const response = await createProjectAction(input);
 
-		if (error) return toast.error(error.message);
+		if (response?.serverError) return toast.error(response.serverError);
 
-		router.push(`projects/${createdProject.slug}`);
+		router.push(`projects/${response?.data?.slug}`);
 	});
 
 	useEffect(() => {
