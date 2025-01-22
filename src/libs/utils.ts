@@ -25,3 +25,5 @@ export const getInitials = (text: string) =>
 		.map((arg) => arg[0])
 		.join("")
 		.toUpperCase();
+
+export const NIL_ULID = "00000000000000000000000000";
