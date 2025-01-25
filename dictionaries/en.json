@@ -1,0 +1,8 @@
+{
+	"pages": {
+		"dashboard": "dashboard",
+		"cashFlow": "cash flow",
+		"projects": "projects",
+		"editOrganization": "edit organization"
+	}
+}
