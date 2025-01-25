@@ -98,7 +98,7 @@ export const TableCashFlowMovementComponent: FC<Props> = ({
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map((row) => (
 							<FormCashFlowMovementComponent
-								key={row.id}
+								key={row.original.id}
 								fallback={fallbackTableRow}
 								cashFlowMovement={row.original}
 							>

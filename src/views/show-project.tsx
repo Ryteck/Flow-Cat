@@ -1,5 +1,6 @@
 "use client";
 
+import { destroyProjectAction } from "@/actions/destroy-project";
 import { FormProjectTaskComponent } from "@/components/forms/project-task";
 import { ProjectTaskComponent } from "@/components/project-task";
 import { Button } from "@/components/ui/button";
@@ -18,8 +19,9 @@ import { BREADCRUMB_PAGE_NAME } from "@/store/breadcrumb";
 import { useTaskStore } from "@/store/task";
 import type RootTask from "@/types/RootTask";
 import type { Project, ProjectTask } from "@prisma/client";
+import { LoaderIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { FC } from "react";
+import { type FC, useState } from "react";
 
 interface Props {
 	project: Project;
@@ -77,6 +79,8 @@ export const ShowProjectView: FC<Props> = ({ project }) => {
 
 	const taskStore = useTaskStore();
 
+	const [isDeleting, setIsDeleting] = useState(false);
+
 	return (
 		<div className="w-full flex flex-1 flex-col gap-4 p-4 pt-0">
 			<Card>
@@ -110,11 +114,32 @@ export const ShowProjectView: FC<Props> = ({ project }) => {
 					</Select>
 
 					<FormProjectTaskComponent projectId={project.id} />
+
+					<Button
+						size="icon"
+						variant="destructive"
+						disabled={isDeleting}
+						onClick={async () => {
+							setIsDeleting(true);
+							await destroyProjectAction(project.id);
+							router.push("/projects");
+						}}
+					>
+						{isDeleting ? (
+							<LoaderIcon className="animate-spin" />
+						) : (
+							<TrashIcon />
+						)}
+					</Button>
 				</CardContent>
 			</Card>
 
 			<div className="flex flex-col">
-				<Button className="w-fit" onClick={taskStore.closeAll}>
+				<Button
+					className="w-fit"
+					onClick={taskStore.closeAll}
+					disabled={taskStore.openedTasks.length === 0}
+				>
 					Collapse All
 				</Button>
 

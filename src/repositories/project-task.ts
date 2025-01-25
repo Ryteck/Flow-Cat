@@ -29,3 +29,6 @@ export const storeProjectTask = ({
 			parentId,
 		},
 	});
+
+export const destroyProjectTask = (id: string): Promise<ProjectTask> =>
+	prismaClient.projectTask.delete({ where: { id } });

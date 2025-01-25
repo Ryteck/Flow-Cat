@@ -67,3 +67,6 @@ export const storeProject = ({
 			organizationId,
 		},
 	});
+
+export const destroyProject = (id: string): Promise<Project> =>
+	prismaClient.project.delete({ where: { id } });

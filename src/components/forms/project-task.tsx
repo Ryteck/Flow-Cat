@@ -57,7 +57,7 @@ export const FormProjectTaskComponent: FC<Props> = ({
 		if (response?.serverError) return toast.error(response.serverError);
 		form.reset();
 		setDialogOpen(false);
-		mutate(`/api/projects/${projectId}/tasks`);
+		await mutate(`/api/projects/${projectId}/tasks`);
 	});
 
 	return (

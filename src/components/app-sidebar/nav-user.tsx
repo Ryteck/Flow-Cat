@@ -39,7 +39,7 @@ export const SidebarNavUserComponent: FC = () => {
 
 	const { isMobile } = useSidebar();
 
-	const avatar = "https://github.com/shadcn.png";
+	const avatar = "https://github.com/Ryteck.png";
 
 	return (
 		<SidebarMenu>

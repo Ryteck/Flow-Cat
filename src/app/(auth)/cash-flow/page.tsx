@@ -134,8 +134,8 @@ const Page: FC = () => {
 	return (
 		<div className="w-full flex flex-1 flex-col gap-4 p-4 pt-0">
 			<FormCashFlowMovementComponent
-				fallback={() => {
-					compiledCashFlow.mutate();
+				fallback={async () => {
+					await compiledCashFlow.mutate();
 				}}
 			/>
 
@@ -262,8 +262,8 @@ const Page: FC = () => {
 
 			<TableCashFlowMovementComponent
 				cashFlowMovements={compiledCashFlow.data?.movements ?? []}
-				fallbackTableRow={() => {
-					compiledCashFlow.mutate();
+				fallbackTableRow={async () => {
+					await compiledCashFlow.mutate();
 				}}
 			/>
 		</div>
